@@ -279,165 +279,183 @@ def select_serendipitous(pool: dict, feeds_config: dict, state: dict, count: int
 # 3. HTML cikti
 # --------------------------------------------------------------------------
 
-def render_html(selected: list, run_date: str, accession_start: int) -> str:
-    cards = []
-    for i, art in enumerate(selected):
-        acc_no = f"{accession_start + i:04d}"
-        summary = art["summary"] or "Ozet mevcut degil — kaynaga gidin."
-        cards.append(f"""
-        <article class="card">
-          <div class="card-top">
-            <span class="acc-no">Kesif No. {acc_no}</span>
-            <span class="category-tag">{art['category']}</span>
-          </div>
-          <h2 class="title"><a href="{art['link']}" target="_blank" rel="noopener">{art['title']}</a></h2>
-          <p class="summary">{summary}</p>
-          <div class="card-bottom">
-            <span class="source">{art['source']}</span>
-            <a class="read-link" href="{art['link']}" target="_blank" rel="noopener">Oku &rarr;</a>
-          </div>
-        </article>""")
+def _esc(s: str) -> str:
+    return (s or "").replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
 
-    cards_html = "\n".join(cards)
+
+def render_html(selected: list, run_date: str, accession_start: int) -> str:
+    # ust bilgi: kac alan, seckin kurum sayisi
+    fields = []
+    for a in selected:
+        if a.get("category") and a["category"] not in fields:
+            fields.append(a["category"])
+    entries = []
+    for i, art in enumerate(selected):
+        numeral = f"{i + 1:02d}"
+        summary = _esc(art.get("summary") or "Ozet yok — kaynaga gidin.")
+        title = _esc(art.get("title", ""))
+        cat = _esc(art.get("category", ""))
+        source = _esc(art.get("source", ""))
+        link = art.get("link", "#")
+        spark = '<span class="spark" title="merak-acici yem">&#10022;</span>' if art.get("enriched") else ""
+        entries.append(f"""
+      <article class="entry">
+        <div class="num" aria-hidden="true">{numeral}</div>
+        <div class="body">
+          <div class="eyebrow">{cat}</div>
+          <h2 class="title"><a href="{link}" target="_blank" rel="noopener">{title}</a></h2>
+          <p class="hook">{summary} {spark}</p>
+          <div class="meta">
+            <span class="source">{source}</span>
+            <a class="go" href="{link}" target="_blank" rel="noopener">Kaynaga git &rarr;</a>
+          </div>
+        </div>
+      </article>""")
+
+    entries_html = "\n".join(entries)
+    issue = f"{accession_start // 100:03d}" if accession_start else "001"
 
     return f"""<!DOCTYPE html>
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Kesif Fisi — {run_date}</title>
+<title>Kesif Fisi &middot; {run_date}</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,500&family=Space+Grotesk:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   :root {{
-    --ink: #23281f;
-    --paper: #f1ede1;
-    --paper-card: #fbf8f0;
-    --brass: #9c7a3c;
-    --sage: #56624a;
-    --line: #cfc6ac;
-    --shadow: rgba(35, 40, 31, 0.12);
+    --bg: #14110c;
+    --bg2: #1b1710;
+    --paper: #efe7d6;
+    --muted: #a99e88;
+    --faint: #6f6653;
+    --gold: #e2a44e;
+    --line: #332c20;
+    --rule: #3d3527;
   }}
   * {{ box-sizing: border-box; }}
+  html {{ -webkit-text-size-adjust: 100%; }}
   body {{
     margin: 0;
-    background: var(--ink);
-    color: var(--ink);
-    font-family: 'Fraunces', serif;
-  }}
-  .wrap {{
-    max-width: 760px;
-    margin: 0 auto;
-    padding: 56px 24px 80px;
-  }}
-  header {{
+    background:
+      radial-gradient(120% 80% at 100% 0%, #211a10 0%, rgba(33,26,16,0) 55%),
+      var(--bg);
     color: var(--paper);
-    margin-bottom: 40px;
+    font-family: 'Fraunces', Georgia, serif;
+    -webkit-font-smoothing: antialiased;
   }}
-  .eyebrow {{
-    font-family: 'Space Mono', monospace;
-    font-size: 12px;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: var(--brass);
-    display: block;
-    margin-bottom: 10px;
+  a {{ color: inherit; }}
+  .wrap {{ max-width: 800px; margin: 0 auto; padding: clamp(28px, 6vw, 72px) clamp(20px, 5vw, 40px) 96px; }}
+
+  /* masthead */
+  .masthead {{ border-bottom: 2px solid var(--gold); padding-bottom: 18px; margin-bottom: 8px; }}
+  .kicker {{
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 12px; letter-spacing: 0.32em; text-transform: uppercase;
+    color: var(--gold); margin: 0 0 14px;
+    display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px;
   }}
   h1 {{
-    font-size: 40px;
-    font-weight: 700;
-    font-variation-settings: 'opsz' 40;
-    margin: 0 0 8px;
-    line-height: 1.1;
+    font-size: clamp(46px, 12vw, 92px);
+    line-height: 0.92; margin: 0; font-weight: 600;
+    letter-spacing: -0.02em;
+    font-variation-settings: 'opsz' 120;
   }}
-  .subtitle {{
-    font-family: 'Space Mono', monospace;
-    font-size: 13px;
-    color: #b9c2ad;
-    margin: 0;
+  h1 em {{ font-style: italic; font-weight: 500; color: var(--gold); }}
+  .standfirst {{
+    font-family: 'Space Grotesk', sans-serif;
+    color: var(--muted); font-size: 14px; line-height: 1.5;
+    margin: 16px 0 0; max-width: 46ch;
   }}
-  .card {{
-    background: var(--paper-card);
-    border: 1px solid var(--line);
-    border-radius: 2px;
-    padding: 24px 26px;
-    margin-bottom: 18px;
-    box-shadow: 0 3px 0 var(--shadow);
+  .runbar {{
+    display: flex; gap: 22px; flex-wrap: wrap;
+    font-family: 'Space Grotesk', sans-serif; font-size: 12px; letter-spacing: 0.04em;
+    color: var(--faint); margin: 40px 0 8px; text-transform: uppercase;
+  }}
+  .runbar b {{ color: var(--paper); font-weight: 500; }}
+
+  /* entries */
+  .entry {{
+    display: grid; grid-template-columns: minmax(64px, 92px) 1fr;
+    gap: clamp(14px, 3vw, 30px);
+    padding: 34px 0; border-top: 1px solid var(--rule);
     position: relative;
   }}
-  .card::before {{
-    content: "";
-    position: absolute;
-    left: -1px; top: 14px; bottom: 14px;
-    width: 3px;
-    background: var(--brass);
+  .entry:first-of-type {{ border-top: none; }}
+  .num {{
+    font-size: clamp(40px, 9vw, 72px); line-height: 0.9;
+    font-weight: 500; color: transparent;
+    -webkit-text-stroke: 1px var(--faint);
+    font-variation-settings: 'opsz' 72;
+    padding-top: 4px; user-select: none;
   }}
-  .card-top {{
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-    font-family: 'Space Mono', monospace;
-    font-size: 11px;
-    letter-spacing: 0.04em;
-    margin-bottom: 12px;
+  .eyebrow {{
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--gold); margin-bottom: 10px;
   }}
-  .acc-no {{ color: var(--brass); }}
-  .category-tag {{
-    color: var(--sage);
-    text-transform: uppercase;
-    text-align: right;
+  .title {{ margin: 0 0 12px; font-size: clamp(23px, 4.4vw, 33px); line-height: 1.14; font-weight: 600; letter-spacing: -0.01em; }}
+  .title a {{ text-decoration: none; background: linear-gradient(var(--gold), var(--gold)) no-repeat; background-size: 0% 1.5px; background-position: 0 100%; transition: background-size .35s ease, color .2s ease; }}
+  .entry:hover .title a {{ background-size: 100% 1.5px; }}
+  .title a:hover {{ color: var(--gold); }}
+  .hook {{ font-size: 17px; line-height: 1.62; color: #d8cfbc; margin: 0 0 18px; max-width: 58ch; }}
+  .spark {{ color: var(--gold); font-size: 13px; vertical-align: 2px; }}
+  .meta {{
+    display: flex; justify-content: space-between; align-items: center; gap: 14px; flex-wrap: wrap;
+    font-family: 'Space Grotesk', sans-serif; font-size: 12.5px; letter-spacing: 0.02em;
   }}
-  .title {{
-    font-size: 22px;
-    line-height: 1.3;
-    margin: 0 0 10px;
-    font-weight: 600;
-  }}
-  .title a {{
-    color: var(--ink);
-    text-decoration: none;
-    background-image: linear-gradient(var(--brass), var(--brass));
-    background-repeat: no-repeat;
-    background-size: 100% 1px;
-    background-position: 0 100%;
-  }}
-  .title a:hover {{ color: var(--brass); }}
-  .summary {{
-    font-size: 15px;
-    line-height: 1.6;
-    color: #3c4033;
-    margin: 0 0 16px;
-  }}
-  .card-bottom {{
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-top: 1px dashed var(--line);
-    padding-top: 12px;
-    font-family: 'Space Mono', monospace;
-    font-size: 12px;
-  }}
-  .source {{ color: var(--sage); }}
-  .read-link {{ color: var(--brass); text-decoration: none; font-weight: 700; }}
-  .read-link:hover {{ text-decoration: underline; }}
+  .source {{ color: var(--muted); text-transform: uppercase; letter-spacing: 0.1em; font-size: 11.5px; }}
+  .go {{ color: var(--gold); text-decoration: none; font-weight: 600; white-space: nowrap; }}
+  .go:hover {{ text-decoration: underline; }}
+
   footer {{
-    color: #8b937e;
-    font-family: 'Space Mono', monospace;
-    font-size: 11px;
-    text-align: center;
-    margin-top: 40px;
+    margin-top: 56px; padding-top: 20px; border-top: 1px solid var(--rule);
+    font-family: 'Space Grotesk', sans-serif; font-size: 12px; line-height: 1.6;
+    color: var(--faint); text-align: center;
+  }}
+
+  /* light mode */
+  @media (prefers-color-scheme: light) {{
+    :root {{
+      --bg: #f3ede0; --bg2: #fbf7ee; --paper: #211d15; --muted: #6b6350;
+      --faint: #a89c82; --gold: #9a6b21; --line: #ddd3bd; --rule: #ddd2ba;
+    }}
+    body {{ background: radial-gradient(120% 80% at 100% 0%, #efe6d1 0%, rgba(239,230,209,0) 55%), var(--bg); }}
+    .hook {{ color: #453d2c; }}
+  }}
+  :root[data-theme="light"] {{
+    --bg: #f3ede0; --paper: #211d15; --muted: #6b6350; --faint: #a89c82;
+    --gold: #9a6b21; --rule: #ddd2ba;
+  }}
+  :root[data-theme="light"] body {{ background: radial-gradient(120% 80% at 100% 0%, #efe6d1 0%, rgba(239,230,209,0) 55%), var(--bg); }}
+  :root[data-theme="light"] .hook {{ color: #453d2c; }}
+  :root[data-theme="dark"] {{
+    --bg: #14110c; --paper: #efe7d6; --muted: #a99e88; --faint: #6f6653;
+    --gold: #e2a44e; --rule: #3d3527;
+  }}
+
+  @media (max-width: 520px) {{
+    .entry {{ grid-template-columns: 1fr; gap: 6px; }}
+    .num {{ font-size: 34px; -webkit-text-stroke: 1px var(--gold); color: transparent; }}
   }}
 </style>
 </head>
 <body>
   <div class="wrap">
-    <header>
-      <span class="eyebrow">Serendipity Digest &middot; {len(selected)} kesif</span>
-      <h1>Kesif Fisi</h1>
-      <p class="subtitle">{run_date} &mdash; akademik ve dusunce-kurulusu kaynaklarindan rastgele secilen okumalar</p>
+    <header class="masthead">
+      <div class="kicker"><span>Serendipity &middot; Kesif Fisi</span><span>No. {issue}</span></div>
+      <h1>Kesif<br><em>Fisi</em></h1>
+      <p class="standfirst">Seckin kurumlardan, hakemli dergilerden ve fikir yazilarindan &mdash; kontrollu rastgelelikle secilmis, ilgili ama beklenmedik okumalar.</p>
+      <div class="runbar">
+        <span>{run_date}</span>
+        <span><b>{len(selected)}</b> kesif</span>
+        <span><b>{len(fields)}</b> alan</span>
+      </div>
     </header>
-    {cards_html}
-    <footer>Bu liste, gorulmemis kaynaklar arasindan agirlikli-rastgele secim ile olusturulmustur.</footer>
+    {entries_html}
+    <footer>Gorulmemis kaynaklar arasindan agirlikli-rastgele secildi. Serendipity: aramadan bulmak.</footer>
   </div>
 </body>
 </html>"""

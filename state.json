@@ -1,29 +1,31 @@
 {
   "seen_ids": [
-    "32fd6da317ae05cc",
-    "7ea8ba98cbe07000",
-    "d5f89504a0205db4",
-    "324e4b056d3ee600",
-    "b8a0437b61485844",
-    "f046c7a1eeee2557"
+    "d5854e2b9cc84170",
+    "ed79320af2bdb52e",
+    "5765b471cf928609",
+    "bc96338aa9b76158",
+    "8908ecc8faa443dc",
+    "9fd01e584398241b",
+    "925e6f705b3953a0"
   ],
   "category_last_used": {
-    "Tasarim ve Yaratici Dusunce": 1785011743.7441542,
-    "Akademik Calismalar (Hakemli)": 1785011743.7441542,
-    "Seckin Kurumlardan Yeni Calismalar": 1785011743.7441542,
-    "Teknoloji ve Toplum": 1785011743.7441542,
-    "Politika ve Ekonomi (Dusunce Kuruluslari)": 1785011743.7441542
+    "Karmasik Sistemler ve Bilim": 1785012392.08358,
+    "Akademik Calismalar (Hakemli)": 1785012392.08358,
+    "Seckin Kurumlardan Yeni Calismalar": 1785012392.08358,
+    "Genel Bilim": 1785012392.08358,
+    "Politika ve Ekonomi (Dusunce Kuruluslari)": 1785012392.08358
   },
   "history": [
     {
       "date": "25 July 2026",
       "titles": [
-        "MIT projects selected for funding under US Department of Energy’s Genesis Mission",
-        "Substrate-free generation of photosensitizer radical-ion pairs enables multipath photoredox for hypoxia-tolerant photodynamic therapy",
-        "The looting of science fiction",
-        "Neuronal protein Sex-lethal modulates tRNA synthesis via the polymerase III subunit Polr3E in male <i>Drosophila</i> neurons",
-        "How political typology groups feel about the midterm elections and Trump",
-        "Measuring community engagement and trust in community health workers in Haiti, Malawi, and Rwanda: a cross-sectional study"
+        "Federal Education Support Centers Still Fill Key State Gaps",
+        "Paternal over- and under-nutrition programme fetal and placental development in a sex-specific manner in mice",
+        "This El Niño is set to be the largest on record by a ‘mind-blowing margin’",
+        "Surfactantless Electrophoretic Deposition of Nonaqueous CuO Nanoparticle Dispersions by Tailoring Their Surface Defectiveness",
+        "Inside the fight against the parasite Cyclospora",
+        "A genetically encoded sensor of ionic stress links cellular proton dynamics to sleep",
+        "Comparative single-nucleus transcriptomics reveals asymmetric evolution of the <i>Drosophila</i> male and female germlines"
       ]
     }
   ]
