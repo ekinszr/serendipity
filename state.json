@@ -1,50 +1,33 @@
 {
   "seen_ids": [
-    "7de596d428e5e9bc",
+    "33c08ea51a2c16dd",
+    "bc96338aa9b76158",
     "77b2509cad42ee75",
-    "d5f89504a0205db4",
-    "f54b154c6d435fef",
-    "512ce3c7fbddfdd0",
-    "41cf3d7b733d3fcf",
-    "fbd50d0d06d0ae38",
-    "b2992402a7219efe",
-    "11c377da814b0dd3",
-    "0809c12c5f5cb8a1",
-    "ff58bd70072e8001",
-    "a657598bfc7465b2",
-    "2ee1be5f83cf0dcb",
-    "98b8868e1b5300b7"
+    "a91419321019f481",
+    "e64a492b7886f339",
+    "d29b15d6aae62caa",
+    "ca74f8c5cf9dad7f",
+    "7b64375ebd57d147"
   ],
   "category_last_used": {
-    "Genel Bilim": 1785009383.057614,
-    "Teknoloji ve Toplum": 1785009383.057614,
-    "Tasarim ve Yaratici Dusunce": 1785009383.057614,
-    "Karmasik Sistemler ve Bilim": 1785009349.101125,
-    "Politika ve Ekonomi (Dusunce Kuruluslari)": 1785009383.057614
+    "Genel Bilim": 1785010439.898262,
+    "Karmasik Sistemler ve Bilim": 1785010439.898262,
+    "Akademik Calismalar (Hakemli)": 1785010439.898262,
+    "Tasarim ve Yaratici Dusunce": 1785010439.898262,
+    "Teknoloji ve Toplum": 1785010439.898262
   },
   "history": [
     {
       "date": "25 July 2026",
       "titles": [
-        "How China Misperceives Itself",
-        "What draws well-meaning parents to authoritarian parenting?",
-        "How to Love the World More: George Saunders on the Courage of Uncertainty",
-        "Humans may have spoken 10 times as many languages 2,000 years ago",
-        "How we measured Americans’ engagement in public life",
-        "The Space Force is now seeking to buy up to $30 billion in rocket launches",
-        "This humpback whale hunting strategy has been out of sight — until now"
-      ]
-    },
-    {
-      "date": "25 July 2026",
-      "titles": [
-        "Armenia's Specters of Peace and War",
-        "The people’s atheist",
-        "Europe's heat waves are killing thousands—and wringing its soils dry",
-        "‘I can’t work in the farce of climate change cruise tourism anymore’: why Antarctic guides quit their dream jobs",
-        "How political typology groups feel about the midterm elections and Trump",
+        "Featuring Trump on US coins and bills would put America in rare company",
+        "Is it possible to regain a sense of smell? These scientists are working on it",
+        "How to Stop Waiting and Start Living: A Jolt from Henry James",
+        "This El Niño is set to be the largest on record by a ‘mind-blowing margin’",
+        "Does This Photo from the Curiosity Rover Prove an Intense Sandstorm on Mars?",
+        "What <i>The Odyssey</i> reveals about ancient science — from botany to psychiatry",
         "Rocket Report: Lightning strikes in China; Starship launch on deck",
-        "Looking beyond research"
+        "Competing value signals impair reward-learning via dopaminergic mechanisms and increase exploration"
       ]
     }
   ]
