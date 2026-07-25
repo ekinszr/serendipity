@@ -1,0 +1,59 @@
+name: Serendipity Digest
+
+# Her Pazartesi 06:00 UTC'de yeni bir "Kesif Fisi" uretir, gorulmus-hafizasini
+# (state.json) commit'ler ve sonucu GitHub Pages'te yayinlar. Elle de tetiklenebilir.
+on:
+  schedule:
+    - cron: "0 6 * * MON"
+  workflow_dispatch: {}
+
+# Pages'e deploy + state.json commit icin gerekli izinler
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+# Ayni anda tek deploy kossun
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Bagimliligi kur
+        run: pip install feedparser
+
+      - name: Fisi uret
+        run: python digest.py --count 7
+
+      - name: Hafizayi ve arsivi commit'le
+        run: |
+          git config user.name "digest-bot"
+          git config user.email "bot@users.noreply.github.com"
+          git add state.json output/
+          git commit -m "Yeni kesif fisi ($(date -u +%Y-%m-%d))" || echo "degisiklik yok"
+          git push
+
+      - name: Pages artifact yukle
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: output
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Pages'e yayinla
+        id: deployment
+        uses: actions/deploy-pages@v4

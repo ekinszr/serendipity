@@ -1,0 +1,60 @@
+{
+  "_readme": "Her kategori bir 'kesif alani'. Kendi ilgi alanlariniza gore ekleyip cikarabilirsiniz. 'weight' o kategoriden ne siklikta secim yapilacagini etkiler (varsayilan 1.0). 'recency' ileriye donuk bir ipucu: high=tazelik onemli (haber/preprint), soft=orta, off=tarih onemsiz (fikir/deneme). Yeni kaynak eklemek icin {'name':..,'url':..} nesnesi ekleyin; script bozuk feed'leri otomatik atlar.",
+
+  "Tasarim ve Yaratici Dusunce": {
+    "weight": 1.0,
+    "recency": "off",
+    "sources": [
+      {"name": "Aeon (Felsefe & Kultur)", "url": "https://aeon.co/feed.rss"},
+      {"name": "Psyche (Zihin & Anlam)", "url": "https://psyche.co/feed.rss"},
+      {"name": "The Marginalian", "url": "https://www.themarginalian.org/feed/"}
+    ]
+  },
+
+  "Karmasik Sistemler ve Bilim": {
+    "weight": 1.0,
+    "recency": "soft",
+    "sources": [
+      {"name": "Quanta Magazine", "url": "https://www.quantamagazine.org/feed/"},
+      {"name": "Nautilus", "url": "https://nautil.us/feed"},
+      {"name": "Science News", "url": "https://www.sciencenews.org/feed"}
+    ]
+  },
+
+  "Genel Bilim": {
+    "weight": 1.0,
+    "recency": "soft",
+    "sources": [
+      {"name": "Nature (haberler)", "url": "https://www.nature.com/nature.rss"},
+      {"name": "Scientific American", "url": "http://rss.sciam.com/ScientificAmerican-Global"}
+    ]
+  },
+
+  "Teknoloji ve Toplum": {
+    "weight": 1.0,
+    "recency": "high",
+    "sources": [
+      {"name": "MIT News", "url": "https://news.mit.edu/rss/feed"},
+      {"name": "Ars Technica (Bilim)", "url": "https://feeds.arstechnica.com/arstechnica/science"},
+      {"name": "The Conversation", "url": "https://theconversation.com/global/articles.atom"}
+    ]
+  },
+
+  "Politika ve Ekonomi (Dusunce Kuruluslari)": {
+    "weight": 1.0,
+    "recency": "soft",
+    "sources": [
+      {"name": "Pew Research Center", "url": "https://www.pewresearch.org/feed/"},
+      {"name": "RAND Corporation", "url": "https://www.rand.org/content/rand/blog.xml"}
+    ]
+  },
+
+  "Akademik On-Baskilar (arXiv)": {
+    "weight": 0.7,
+    "recency": "high",
+    "sources": [
+      {"name": "arXiv - cs.AI", "url": "https://rss.arxiv.org/rss/cs.AI"},
+      {"name": "arXiv - physics.soc-ph (Sosyal Fizik)", "url": "https://rss.arxiv.org/rss/physics.soc-ph"}
+    ]
+  }
+}
