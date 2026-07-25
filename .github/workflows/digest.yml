@@ -28,10 +28,15 @@ jobs:
         with:
           python-version: "3.11"
 
-      - name: Bagimliligi kur
-        run: pip install feedparser
+      - name: Bagimliliklari kur
+        run: pip install feedparser anthropic
 
       - name: Fisi uret
+        env:
+          # Yem katmani icin (opsiyonel). Repo Settings > Secrets'ta
+          # ANTHROPIC_API_KEY tanimliysa abstract'lar merak-acici yeme cevrilir;
+          # yoksa ham feed ozeti kullanilir (fis yine uretilir).
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
         run: python digest.py --count 7
 
       - name: Hafizayi ve arsivi commit'le

@@ -1,34 +1,29 @@
 {
   "seen_ids": [
-    "8dc57b5a6039a0ff",
-    "db36b9848c247dea",
-    "06562adb178cb959",
-    "2543e0d4764181d1",
-    "892008818768945b",
-    "4cbdb9acbe175b76",
-    "2b9c7bccda6abc89",
-    "2392a80e8574a5f8"
+    "32fd6da317ae05cc",
+    "7ea8ba98cbe07000",
+    "d5f89504a0205db4",
+    "324e4b056d3ee600",
+    "b8a0437b61485844",
+    "f046c7a1eeee2557"
   ],
   "category_last_used": {
-    "Seckin Kurumlardan Yeni Calismalar": 1785011265.323794,
-    "Karmasik Sistemler ve Bilim": 1785011265.323794,
-    "Politika ve Ekonomi (Dusunce Kuruluslari)": 1785011265.323794,
-    "Akademik Calismalar (Hakemli)": 1785011265.323794,
-    "Tasarim ve Yaratici Dusunce": 1785011265.323794,
-    "Genel Bilim": 1785011265.323794
+    "Tasarim ve Yaratici Dusunce": 1785011743.7441542,
+    "Akademik Calismalar (Hakemli)": 1785011743.7441542,
+    "Seckin Kurumlardan Yeni Calismalar": 1785011743.7441542,
+    "Teknoloji ve Toplum": 1785011743.7441542,
+    "Politika ve Ekonomi (Dusunce Kuruluslari)": 1785011743.7441542
   },
   "history": [
     {
       "date": "25 July 2026",
       "titles": [
-        "L A Paul on transformative experience",
-        "A rare 3-D snake fossil is spilling secrets of its unusual lifestyle",
-        "What we know about the typical Polymarket user",
-        "Time-Resolved X-ray Photoelectron Spectroscopy: Probing Bond Order Rearrangements during Ultrafast Excited-State Intramolecular Proton Transfer",
-        "Personalized gene therapy relieves severe epilepsy in two boys",
-        "Why environmental groups are suing over SpaceX’s land swap deal",
-        "Africa’s cultural landmarks: rock-hewn churches of Lalibela, Ethiopia",
-        "The Amazing Photos from NASA’s First-Ever Mars Lander"
+        "MIT projects selected for funding under US Department of Energy’s Genesis Mission",
+        "Substrate-free generation of photosensitizer radical-ion pairs enables multipath photoredox for hypoxia-tolerant photodynamic therapy",
+        "The looting of science fiction",
+        "Neuronal protein Sex-lethal modulates tRNA synthesis via the polymerase III subunit Polr3E in male <i>Drosophila</i> neurons",
+        "How political typology groups feel about the midterm elections and Trump",
+        "Measuring community engagement and trust in community health workers in Haiti, Malawi, and Rwanda: a cross-sectional study"
       ]
     }
   ]

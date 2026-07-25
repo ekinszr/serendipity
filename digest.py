@@ -452,6 +452,7 @@ def main():
     parser.add_argument("--count", type=int, default=7, help="Kac madde secilsin (varsayilan 7)")
     parser.add_argument("--category", type=str, default=None, help="Sadece belirli bir kategoriden tara")
     parser.add_argument("--reset", action="store_true", help="Gorulmus makale hafizasini sifirla")
+    parser.add_argument("--no-llm", action="store_true", help="LLM yem katmanini atla (sadece ham feed ozeti)")
     args = parser.parse_args()
 
     feeds_config = load_json(FEEDS_PATH, {})
@@ -470,6 +471,15 @@ def main():
     if not selected:
         print("Uyari: secilecek yeni makale bulunamadi. --reset ile hafizayi sifirlayip tekrar deneyin.")
         return
+
+    # Secilen maddeleri merak-acici "yem"lere cevir (Claude ile; opsiyonel).
+    # API anahtari/paket yoksa sessizce ham ozet kullanilir.
+    if not args.no_llm:
+        try:
+            from enrich import enrich_hooks
+            enrich_hooks(selected)
+        except Exception as e:
+            print(f"  [yem atlandi] {e}")
 
     # state guncelle
     state["seen_ids"].extend([a["id"] for a in selected])
