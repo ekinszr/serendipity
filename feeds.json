@@ -1,6 +1,24 @@
 {
   "_readme": "Her kategori bir 'kesif alani'. Kendi ilgi alanlariniza gore ekleyip cikarabilirsiniz. 'weight' o kategoriden ne siklikta secim yapilacagini etkiler (varsayilan 1.0). 'recency' ileriye donuk bir ipucu: high=tazelik onemli (haber/preprint), soft=orta, off=tarih onemsiz (fikir/deneme). Yeni kaynak eklemek icin {'name':..,'url':..} nesnesi ekleyin; script bozuk feed'leri otomatik atlar.",
 
+  "Seckin Kurumlardan Yeni Calismalar": {
+    "weight": 2.0,
+    "recency": "high",
+    "_note": "OpenAlex uzerinden bu kurumlarin SON gunlerde yayimlanan hakemli makaleleri. 'En iyi kurumlardan en yeni fikirler' hedefinin ana motoru. Kurum eklemek: OpenAlex ID'sini https://api.openalex.org/institutions?search=ISIM adresinden alin.",
+    "sources": [
+      {"name": "MIT", "type": "openalex", "institution_id": "I63966007"},
+      {"name": "Harvard", "type": "openalex", "institution_id": "I136199984"},
+      {"name": "Princeton", "type": "openalex", "institution_id": "I20089843"},
+      {"name": "Yale", "type": "openalex", "institution_id": "I32971472"},
+      {"name": "Stanford", "type": "openalex", "institution_id": "I97018004"},
+      {"name": "Politecnico di Milano", "type": "openalex", "institution_id": "I93860229"},
+      {"name": "Oxford", "type": "openalex", "institution_id": "I40120149"},
+      {"name": "Cambridge", "type": "openalex", "institution_id": "I241749"},
+      {"name": "ETH Zurich", "type": "openalex", "institution_id": "I35440088"},
+      {"name": "Caltech", "type": "openalex", "institution_id": "I122411786"}
+    ]
+  },
+
   "Tasarim ve Yaratici Dusunce": {
     "weight": 1.0,
     "recency": "off",

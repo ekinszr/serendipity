@@ -88,12 +88,91 @@ def default_state():
 # 1. Feed'leri cek
 # --------------------------------------------------------------------------
 
+# OpenAlex: bir kurumdan (Princeton, MIT, PoliMi...) cikan EN YENI hakemli
+# calismalari dogrudan ceker. "En iyi kurumlardan en yeni fikirler" hedefinin
+# asil motoru budur -- RSS'in aksine kaynaga gore filtreler ve abstract verir.
+OPENALEX_API = "https://api.openalex.org"
+OPENALEX_MAILTO = "you@example.com"  # nazik kullanim havuzu (polite pool)
+
+
+def _openalex_get(path: str) -> dict:
+    import json as _json
+    url = f"{OPENALEX_API}/{path}"
+    sep = "&" if "?" in url else "?"
+    url = f"{url}{sep}mailto={OPENALEX_MAILTO}"
+    req = urllib.request.Request(url, headers={"User-Agent": USER_AGENT})
+    return _json.loads(urllib.request.urlopen(req, timeout=25).read())
+
+
+def _decode_abstract(inv_index: dict) -> str:
+    """OpenAlex abstract'i 'inverted index' olarak verir; duz metne cevirir."""
+    if not inv_index:
+        return ""
+    positions = []
+    for word, idxs in inv_index.items():
+        for i in idxs:
+            positions.append((i, word))
+    positions.sort()
+    return " ".join(w for _, w in positions)
+
+
+def fetch_openalex_institution(name: str, inst_id: str, days: int = 21,
+                               limit: int = 15) -> list:
+    """Bir kurumun son `days` gununde yayimlanan hakemli makalelerini ceker."""
+    from datetime import date, timedelta
+    frm = (date.today() - timedelta(days=days)).isoformat()
+    to = date.today().isoformat()
+    filt = (f"authorships.institutions.id:{inst_id},"
+            f"from_publication_date:{frm},to_publication_date:{to},"
+            f"type:article,is_paratext:false,has_abstract:true")
+    data = _openalex_get(f"works?filter={filt}&sort=publication_date:desc"
+                         f"&per_page={limit}")
+    out = []
+    for it in data.get("results", []):
+        title = (it.get("title") or "").strip()
+        if not title or len(title) < 12:
+            continue
+        # kod deposu / veri seti gurultusunu ele
+        low = title.lower()
+        if low.startswith(("code ", "data for", "dataset", "supplementary")):
+            continue
+        link = it.get("doi") or it.get("id") or ""
+        summary = strip_html(_decode_abstract(it.get("abstract_inverted_index")))
+        out.append({
+            "id": article_id(it.get("id") or link),
+            "title": title,
+            "link": link,
+            "summary": summary[:400],
+            "source": name,
+            "category": None,       # cagiran doldurur
+            "published": it.get("publication_date", ""),
+        })
+    return out
+
+
 def fetch_category_articles(category: str, sources: list) -> list:
-    """Bir kategorideki tum kaynaklardan makaleleri ceker."""
+    """Bir kategorideki tum kaynaklardan makaleleri ceker (RSS veya OpenAlex)."""
     articles = []
     for src in sources:
-        url = src["url"]
         name = src["name"]
+
+        # OpenAlex kurum kaynagi
+        if src.get("type") == "openalex":
+            try:
+                items = fetch_openalex_institution(
+                    name, src["institution_id"],
+                    days=src.get("days", 21), limit=src.get("limit", 15))
+            except Exception as e:
+                print(f"  [atlandi] {name}: OpenAlex hatasi ({e})")
+                continue
+            for it in items:
+                it["category"] = category
+            articles.extend(items)
+            print(f"  [ok] {name}: {len(items)} calisma bulundu (OpenAlex)")
+            continue
+
+        # RSS kaynagi
+        url = src["url"]
         try:
             raw = fetch_url(url)
             parsed = feedparser.parse(raw)
