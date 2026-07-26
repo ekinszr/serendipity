@@ -221,14 +221,5 @@
       ]
     }
   ],
-  "feedback": {
-    "test0000deadbeef": {
-      "oy": "up",
-      "baslik": "Test makalesi",
-      "alan": "Genel Bilim",
-      "uzaklik": "orta",
-      "tarih": "2026-07-26T17:11:07+00:00",
-      "issue": 1
-    }
-  }
+  "feedback": {}
 }
