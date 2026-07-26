@@ -1,28 +1,35 @@
 {
   "seen_ids": [
-    "d5854e2b9cc84170",
+    "670d5069d767b3c4",
+    "5765b471cf928609",
+    "01e913b540eb2685",
+    "2ee1be5f83cf0dcb",
+    "925e6f705b3953a0",
     "bc96338aa9b76158",
+    "488a31b4dc57ff18",
+    "0455acfd40da1034",
+    "2340cde4a19281a5",
+    "6681bf2bfd3a5be1",
+    "9fd01e584398241b",
+    "f81b9948c5d93cd8",
+    "652de97823f4056b",
+    "0c8ac74795abbf51",
+    "d5854e2b9cc84170",
+    "c01416aedf40a626",
+    "0743374f64c3acde",
+    "ed79320af2bdb52e",
     "5e7ce0cbda8279e7",
     "ed768cbb6e3f44d0",
-    "2ee1be5f83cf0dcb",
-    "5765b471cf928609",
-    "0743374f64c3acde",
-    "925e6f705b3953a0",
-    "f81b9948c5d93cd8",
-    "8908ecc8faa443dc",
-    "9fd01e584398241b",
-    "01e913b540eb2685",
-    "6681bf2bfd3a5be1",
-    "ed79320af2bdb52e"
+    "8908ecc8faa443dc"
   ],
   "category_last_used": {
     "Karmasik Sistemler ve Bilim": 1785012392.08358,
-    "Akademik Calismalar (Hakemli)": 1785060930.8573716,
-    "Seckin Kurumlardan Yeni Calismalar": 1785012392.08358,
-    "Genel Bilim": 1785012392.08358,
-    "Politika ve Ekonomi (Dusunce Kuruluslari)": 1785060930.8573716,
-    "Tasarim ve Yaratici Dusunce": 1785060930.8573716,
-    "Teknoloji ve Toplum": 1785060930.8573716
+    "Akademik Calismalar (Hakemli)": 1785061593.4483106,
+    "Seckin Kurumlardan Yeni Calismalar": 1785061593.4483106,
+    "Genel Bilim": 1785061593.4483106,
+    "Politika ve Ekonomi (Dusunce Kuruluslari)": 1785061593.4483106,
+    "Tasarim ve Yaratici Dusunce": 1785061593.4483106,
+    "Teknoloji ve Toplum": 1785061593.4483106
   },
   "history": [
     {
@@ -47,6 +54,18 @@
         "With help from data, art museums are reframing the visitor experience",
         "The people’s atheist",
         "How was the first language formed?"
+      ]
+    },
+    {
+      "date": "26 Temmuz 2026",
+      "titles": [
+        "How to imagine a better future for yourself",
+        "The diffraction-lensing interpretation of GW231123 with astrophysical priors",
+        "A new framework for industrial policy: the case of semiconductors in Japan and the United States",
+        "How Americans Are Engaged With News, Politics, Religion and Civic Life",
+        "Structures and inhibition of the Crimean–Congo haemorrhagic fever virus polymerase",
+        "A reassessment of NMDA receptor–dependent presynaptic homeostatic plasticity",
+        "Let Tom Hiddleston be your guide to Pompeii's final day"
       ]
     }
   ]
