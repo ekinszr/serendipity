@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="tr" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Keşif Fişi — Marka Kitabı</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600;8..60,700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root[data-theme="light"] {
+    --paper: #eeefe7;
+    --paper-raised: #f8f8f2;
+    --ink: #1c1e16;
+    --ink-soft: #4b4e3f;
+    --accent: #b23a2a;
+    --accent-2: #4b5e3a;
+    --gold: #7a5e24;
+    --line: rgba(28,30,22,0.14);
+    --line-strong: rgba(28,30,22,0.28);
+  }
+  :root[data-theme="dark"] {
+    --paper: #171a13;
+    --paper-raised: #1f2318;
+    --ink: #ece9dd;
+    --ink-soft: #b7b79e;
+    --accent: #e2694f;
+    --accent-2: #8fae72;
+    --gold: #d2aa5c;
+    --line: rgba(236,233,221,0.14);
+    --line-strong: rgba(236,233,221,0.26);
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: "Source Serif 4", Georgia, serif;
+    font-size: 16px;
+    line-height: 1.6;
+    transition: background 0.25s ease, color 0.25s ease;
+  }
+  a { color: var(--accent); }
+  ::selection { background: var(--accent); color: var(--paper); }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+
+  .wrap { max-width: 920px; margin: 0 auto; padding: 48px 24px 100px; }
+
+  .toggle {
+    position: fixed; top: 20px; right: 20px; z-index: 10;
+    font-family: "JetBrains Mono", monospace; font-size: 12px;
+    background: var(--paper-raised); border: 1px solid var(--line-strong);
+    color: var(--ink); padding: 8px 14px; border-radius: 3px; cursor: pointer;
+  }
+  .toggle:hover { border-color: var(--accent); color: var(--accent); }
+
+  header.masthead { border-bottom: 3px solid var(--ink); padding-bottom: 20px; margin-bottom: 44px; }
+  .kicker {
+    font-family: "JetBrains Mono", monospace; font-size: 11px; letter-spacing: 0.16em;
+    text-transform: uppercase; color: var(--accent); margin: 0 0 10px;
+  }
+  h1.wordmark {
+    font-family: "Instrument Serif", Georgia, serif; font-style: italic;
+    font-size: clamp(48px, 9vw, 84px); line-height: 0.95; margin: 0;
+    letter-spacing: -0.01em;
+  }
+  .dek { max-width: 56ch; color: var(--ink-soft); font-size: 17px; margin: 16px 0 0; }
+
+  section { margin-bottom: 64px; }
+  h2.section-title {
+    font-family: "JetBrains Mono", monospace; font-size: 12px; letter-spacing: 0.14em;
+    text-transform: uppercase; color: var(--ink-soft);
+    display: flex; align-items: center; gap: 12px; margin: 0 0 24px;
+  }
+  h2.section-title::after { content: ""; flex: 1; height: 1px; background: var(--line-strong); }
+
+  /* --- palet --- */
+  .swatches { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 14px; }
+  .swatch { border: 1px solid var(--line); border-radius: 4px; overflow: hidden; background: var(--paper-raised); }
+  .swatch-color { height: 70px; }
+  .swatch-info { padding: 10px 12px; font-family: "JetBrains Mono", monospace; }
+  .swatch-name { font-size: 12px; font-weight: 600; margin-bottom: 4px; }
+  .swatch-hex { font-size: 11px; color: var(--ink-soft); }
+  .swatch-contrast { font-size: 10px; color: var(--accent-2); margin-top: 4px; }
+
+  /* --- tipografi --- */
+  .type-row { border-bottom: 1px solid var(--line); padding: 22px 0; display: grid; grid-template-columns: 140px 1fr; gap: 20px; align-items: baseline; }
+  .type-row:last-child { border-bottom: none; }
+  .type-role { font-family: "JetBrains Mono", monospace; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-soft); }
+  .type-sample-display { font-family: "Instrument Serif", Georgia, serif; font-style: italic; font-size: 40px; }
+  .type-sample-body { font-family: "Source Serif 4", Georgia, serif; font-size: 18px; }
+  .type-sample-mono { font-family: "JetBrains Mono", monospace; font-size: 14px; letter-spacing: 0.02em; }
+
+  /* --- ikonlar --- */
+  .icon-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 16px; }
+  .icon-card {
+    border: 1px solid var(--line); border-radius: 4px; padding: 20px 16px;
+    display: flex; flex-direction: column; align-items: center; gap: 12px;
+    background: var(--paper-raised); text-align: center;
+  }
+  .icon-card svg { width: 34px; height: 34px; stroke: var(--accent); }
+  .icon-label { font-family: "JetBrains Mono", monospace; font-size: 11px; color: var(--ink-soft); line-height: 1.4; }
+
+  /* --- ornek kart (canli uygulama) --- */
+  .live-card {
+    background: var(--paper-raised); border: 1px solid var(--line);
+    border-radius: 4px; padding: 26px 28px; position: relative;
+  }
+  .live-card::before { content: ""; position: absolute; left: 0; top: 16px; bottom: 16px; width: 3px; background: var(--accent); }
+  .live-top { display: flex; align-items: center; gap: 10px; font-family: "JetBrains Mono", monospace; font-size: 11.5px; color: var(--ink-soft); margin-bottom: 14px; }
+  .live-top svg { width: 20px; height: 20px; stroke: var(--accent); flex-shrink: 0; }
+  .live-cat { text-transform: uppercase; letter-spacing: 0.08em; }
+  .live-title { font-family: "Source Serif 4", Georgia, serif; font-weight: 600; font-size: 25px; line-height: 1.28; margin: 0 0 12px; }
+  .live-title a { color: var(--ink); text-decoration: none; border-bottom: 1.5px solid var(--accent); }
+  .live-title a:hover { color: var(--accent); }
+  .live-summary { color: var(--ink-soft); font-size: 15.5px; line-height: 1.65; margin: 0 0 18px; }
+  .live-foot { display: flex; justify-content: space-between; align-items: center; border-top: 1px dashed var(--line-strong); padding-top: 12px; font-family: "JetBrains Mono", monospace; font-size: 12px; }
+  .live-source { color: var(--gold); }
+  .live-link { color: var(--accent); font-weight: 600; text-decoration: none; }
+  .live-link:hover { text-decoration: underline; }
+
+  /* --- kural listesi --- */
+  .rules { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+  .rules .do, .rules .dont { padding: 18px 20px; border-radius: 4px; border: 1px solid var(--line); }
+  .rules .do { border-left: 3px solid var(--accent-2); }
+  .rules .dont { border-left: 3px solid var(--accent); }
+  .rules h3 { font-family: "JetBrains Mono", monospace; font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; margin: 0 0 10px; }
+  .rules .do h3 { color: var(--accent-2); }
+  .rules .dont h3 { color: var(--accent); }
+  .rules ul { margin: 0; padding-left: 18px; font-size: 14.5px; color: var(--ink-soft); }
+  .rules li { margin-bottom: 6px; }
+
+  @media (max-width: 620px) {
+    .rules { grid-template-columns: 1fr; }
+    .type-row { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<button class="toggle" id="themeToggle" type="button">Tema: Açık ↔ Koyu</button>
+<div class="wrap">
+
+  <header class="masthead">
+    <p class="kicker">Marka Kitabı &middot; v1</p>
+    <h1 class="wordmark">Keşif Fişi</h1>
+    <p class="dek">Editoryal netlik (dergi okuma deneyimi) + canlı, güvenli tek bir vurgu rengi +
+    tutarlı çizgi-illüstrasyon sistemi. Her karar erişilebilirlik önceliğiyle sınandı —
+    tüm metin/zemin çiftleri en az 4.5:1 kontrast oranını geçer.</p>
+  </header>
+
+  <section>
+    <h2 class="section-title">Palet</h2>
+    <div class="swatches">
+      <div class="swatch"><div class="swatch-color" style="background:var(--paper)"></div>
+        <div class="swatch-info"><div class="swatch-name">paper</div><div class="swatch-hex">zemin</div></div></div>
+      <div class="swatch"><div class="swatch-color" style="background:var(--paper-raised)"></div>
+        <div class="swatch-info"><div class="swatch-name">paper-raised</div><div class="swatch-hex">kart zemini</div></div></div>
+      <div class="swatch"><div class="swatch-color" style="background:var(--ink)"></div>
+        <div class="swatch-info"><div class="swatch-name">ink</div><div class="swatch-hex">govde metni</div>
+        <div class="swatch-contrast">14.5:1 ✓</div></div></div>
+      <div class="swatch"><div class="swatch-color" style="background:var(--ink-soft)"></div>
+        <div class="swatch-info"><div class="swatch-name">ink-soft</div><div class="swatch-hex">ikincil metin</div>
+        <div class="swatch-contrast">7.3:1 ✓</div></div></div>
+      <div class="swatch"><div class="swatch-color" style="background:var(--accent)"></div>
+        <div class="swatch-info"><div class="swatch-name">accent</div><div class="swatch-hex">vurgu / bağlantı</div>
+        <div class="swatch-contrast">5.1:1 ✓</div></div></div>
+      <div class="swatch"><div class="swatch-color" style="background:var(--accent-2)"></div>
+        <div class="swatch-info"><div class="swatch-name">accent-2</div><div class="swatch-hex">ikincil vurgu</div>
+        <div class="swatch-contrast">6.1:1 ✓</div></div></div>
+      <div class="swatch"><div class="swatch-color" style="background:var(--gold)"></div>
+        <div class="swatch-info"><div class="swatch-name">gold</div><div class="swatch-hex">kaynak / meta etiket</div>
+        <div class="swatch-contrast">5.2:1 ✓</div></div></div>
+    </div>
+  </section>
+
+  <section>
+    <h2 class="section-title">Tipografi</h2>
+    <div class="type-row">
+      <div class="type-role">Başlık</div>
+      <div class="type-sample-display">Instrument Serif — Keşfe çıkmanın bir yöntemi olur mu?</div>
+    </div>
+    <div class="type-row">
+      <div class="type-role">Gövde</div>
+      <div class="type-sample-body">Source Serif 4 — uzun okumalar için tasarlanmış, ekranda dinlenmiş bir okuma temposu veren bir gövde fontu. Bu paragraf gerçek bir makale özetinin uzunluğuna yakın olacak şekilde yazıldı.</div>
+    </div>
+    <div class="type-row">
+      <div class="type-role">Etiket / Meta</div>
+      <div class="type-sample-mono">JETBRAINS MONO — KEŞİF NO. 0114 · KATEGORİ · KAYNAK</div>
+    </div>
+  </section>
+
+  <section>
+    <h2 class="section-title">İllüstrasyon Sistemi — Kategori İkonları</h2>
+    <div class="icon-grid">
+      <div class="icon-card">
+        <svg viewBox="0 0 32 32" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M24 6c-8 0-15.5 6-18 20 6-2 10.5-6.5 12.5-11"/><path d="M8 26 22 8"/><path d="M12.5 21.5 16 18"/><path d="M16.5 17 19.5 14"/></svg>
+        <div class="icon-label">Tasarım &amp;<br>Yaratıcı Düşünce</div>
+      </div>
+      <div class="icon-card">
+        <svg viewBox="0 0 32 32" fill="none" stroke-width="1.6"><ellipse cx="16" cy="16" rx="13" ry="5.5"/><ellipse cx="16" cy="16" rx="13" ry="5.5" transform="rotate(60 16 16)"/><ellipse cx="16" cy="16" rx="13" ry="5.5" transform="rotate(120 16 16)"/><circle cx="16" cy="16" r="1.8" fill="var(--accent)" stroke="none"/></svg>
+        <div class="icon-label">Karmaşık Sistemler<br>&amp; Bilim</div>
+      </div>
+      <div class="icon-card">
+        <svg viewBox="0 0 32 32" fill="none" stroke-width="1.6"><circle cx="16" cy="16" r="12.5"/><path d="M16 7l3.4 8.6-3.4 2-3.4-2z" fill="var(--accent)" stroke="none"/><circle cx="16" cy="16" r="1.4" fill="var(--accent)" stroke="none"/></svg>
+        <div class="icon-label">Teknoloji &amp;<br>Toplum</div>
+      </div>
+      <div class="icon-card">
+        <svg viewBox="0 0 32 32" fill="none" stroke-width="1.6" stroke-linecap="round"><line x1="16" y1="4" x2="16" y2="27"/><line x1="7" y1="9" x2="25" y2="9"/><path d="M4.5 17a6 6 0 0 0 11 0L10 9z"/><path d="M16.5 17a6 6 0 0 0 11 0L22 9z"/><line x1="11" y1="27" x2="21" y2="27"/></svg>
+        <div class="icon-label">Politika &amp;<br>Ekonomi</div>
+      </div>
+      <div class="icon-card">
+        <svg viewBox="0 0 32 32" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M13 4h6M14 4v6.5L7 22a3 3 0 0 0 3 4h12a3 3 0 0 0 3-4l-7-11.5V4"/><line x1="10.5" y1="19" x2="21.5" y2="19"/></svg>
+        <div class="icon-label">Akademik<br>Ön-Baskılar</div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2 class="section-title">Canlı Uygulama — Örnek Kayıt</h2>
+    <article class="live-card">
+      <div class="live-top">
+        <svg viewBox="0 0 32 32" fill="none" stroke-width="1.6"><ellipse cx="16" cy="16" rx="13" ry="5.5"/><ellipse cx="16" cy="16" rx="13" ry="5.5" transform="rotate(60 16 16)"/><ellipse cx="16" cy="16" rx="13" ry="5.5" transform="rotate(120 16 16)"/><circle cx="16" cy="16" r="1.8" fill="var(--accent)" stroke="none"/></svg>
+        <span>Keşif No. 0114</span><span>&middot;</span><span class="live-cat">Karmaşık Sistemler &amp; Bilim</span>
+      </div>
+      <h2 class="live-title"><a href="#">Karınca Kolonilerinde Kolektif Zekâ Nasıl Ortaya Çıkar?</a></h2>
+      <p class="live-summary">Bireysel karıncaların izlediği basit kurallar, koloni ölçeğinde şaşırtıcı ölçüde
+      karmaşık problem çözme davranışına dönüşüyor. Yeni araştırma bu geçişin matematiksel
+      izini sürüyor.</p>
+      <div class="live-foot">
+        <span class="live-source">Quanta Magazine</span>
+        <a class="live-link" href="#">Oku &rarr;</a>
+      </div>
+    </article>
+  </section>
+
+  <section>
+    <h2 class="section-title">Kurallar</h2>
+    <div class="rules">
+      <div class="do">
+        <h3>Yap</h3>
+        <ul>
+          <li>Her kategoriyi hem ikon hem yazı ile belirt — renk körlüğü için renk tek başına ayırt edici olmasın</li>
+          <li>Küçük etiketlerde (12px altı) en az 4.5:1, tercihen 7:1 kontrast hedefle</li>
+          <li>Vurgu rengini (accent) sayfada tek bir amaç için kullan: bağlantılar ve ikonlar</li>
+          <li>Odak halkalarını (focus-visible) her zaman görünür tut</li>
+        </ul>
+      </div>
+      <div class="dont">
+        <h3>Yapma</h3>
+        <ul>
+          <li>İkincil/soluk renkleri gövde metninde veya küçük etiketlerde kullanma</li>
+          <li>Gövde fontunu 400 ağırlığının altına düşürme (ince fontlar koyu zeminde okunmaz)</li>
+          <li>Aynı sayfada üçten fazla vurgu rengi kullanma</li>
+          <li>İllüstrasyonları dekorasyon için çoğaltma — her ikon bir kategoriye karşılık gelsin</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+</div>
+<script>
+  var root = document.documentElement;
+  var btn = document.getElementById('themeToggle');
+  btn.addEventListener('click', function () {
+    var cur = root.getAttribute('data-theme');
+    root.setAttribute('data-theme', cur === 'light' ? 'dark' : 'light');
+  });
+</script>
+</body>
+</html>

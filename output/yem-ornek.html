@@ -15,8 +15,8 @@
     --plate: #0c2436;
     --chalk: #e4edf2;
     --body: #c3d4de;
-    --muted: #8aa3b4;
-    --faint: #47657a;
+    --muted: #93aab8;
+    --faint: #7793a6;
     --cyan: #4e9bd1;
     --rust: #d4834f;
     --rule: rgba(138, 163, 180, 0.22);
@@ -26,20 +26,20 @@
   @media (prefers-color-scheme: light) {
     :root {
       --ground: #e9eff2; --plate: #f4f8fa; --chalk: #0b2233; --body: #22414f;
-      --muted: #4d6a7c; --faint: #7d97a6; --cyan: #1f5c8c; --rust: #9c5227;
+      --muted: #3f5c6d; --faint: #55707f; --cyan: #1f5c8c; --rust: #9c5227;
       --rule: rgba(11, 34, 51, 0.18); --hairline: rgba(11, 34, 51, 0.09);
       --glow: rgba(31, 92, 140, 0.08);
     }
   }
   :root[data-theme="light"] {
     --ground: #e9eff2; --plate: #f4f8fa; --chalk: #0b2233; --body: #22414f;
-    --muted: #4d6a7c; --faint: #7d97a6; --cyan: #1f5c8c; --rust: #9c5227;
+    --muted: #3f5c6d; --faint: #55707f; --cyan: #1f5c8c; --rust: #9c5227;
     --rule: rgba(11, 34, 51, 0.18); --hairline: rgba(11, 34, 51, 0.09);
     --glow: rgba(31, 92, 140, 0.08);
   }
   :root[data-theme="dark"] {
     --ground: #071a28; --plate: #0c2436; --chalk: #e4edf2; --body: #c3d4de;
-    --muted: #8aa3b4; --faint: #47657a; --cyan: #4e9bd1; --rust: #d4834f;
+    --muted: #93aab8; --faint: #7793a6; --cyan: #4e9bd1; --rust: #d4834f;
     --rule: rgba(138, 163, 180, 0.22); --hairline: rgba(138, 163, 180, 0.12);
     --glow: rgba(78, 155, 209, 0.14);
   }
@@ -53,7 +53,7 @@
       var(--ground);
     color: var(--body);
     font-family: Spectral, Georgia, "Times New Roman", serif;
-    font-weight: 300;
+    font-weight: 400;
     -webkit-font-smoothing: antialiased;
   }
   a { color: inherit; }
@@ -112,6 +112,10 @@
     font-family: "IBM Plex Mono", ui-monospace, monospace;
     padding-top: 4px;
   }
+  /* kategori ikonu: renk tek basina ayirt edici olmasin diye yaninda
+     her zaman alan adi yazisi durur (marka kitabi kurali) */
+  .cat-icon { width: 26px; height: 26px; color: var(--cyan); flex: none; }
+  .rec.far .cat-icon { color: var(--rust); }
   .acc {
     font-size: 13px; letter-spacing: 0.08em; color: var(--chalk);
     font-variant-numeric: tabular-nums; font-weight: 500;
@@ -212,6 +216,7 @@
     <div class="records">
         <article class="rec" style="--i:0">
           <div class="rail">
+            <svg class="cat-icon" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 12 16 5l12 7"/><path d="M8.5 13v10M16 13v10M23.5 13v10"/><path d="M5 23h22M3.5 27h25"/></svg>
             <div class="acc"><span>No.</span> 0101</div>
             <div class="meter" role="img" aria-label="Bu alan 3 gün önce de gelmişti" title="Bu alan 3 gün önce de gelmişti"><span class="tick on"></span><span class="tick"></span><span class="tick"></span></div>
             <div class="dist">yakın</div>
@@ -233,6 +238,7 @@
 
         <article class="rec" style="--i:1">
           <div class="rail">
+            <svg class="cat-icon" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M7 4h13l5 5v19H7z"/><path d="M20 4v5h5"/><path d="m11.5 18.5 3 3 6.5-7"/></svg>
             <div class="acc"><span>No.</span> 0102</div>
             <div class="meter" role="img" aria-label="Bu alan 11 gündür gelmemişti" title="Bu alan 11 gündür gelmemişti"><span class="tick on"></span><span class="tick on"></span><span class="tick"></span></div>
             <div class="dist">orta</div>
@@ -254,6 +260,7 @@
 
         <article class="rec far" style="--i:2">
           <div class="rail">
+            <svg class="cat-icon" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M16 9.5C13 7 9 6.5 4.5 7v17c4.5-.5 8.5 0 11.5 2.5 3-2.5 7-3 11.5-2.5V7C23 6.5 19 7 16 9.5z"/><path d="M16 9.5v17"/></svg>
             <div class="acc"><span>No.</span> 0103</div>
             <div class="meter" role="img" aria-label="Bu alan 26 gündür gelmemişti" title="Bu alan 26 gündür gelmemişti"><span class="tick on"></span><span class="tick on"></span><span class="tick on"></span></div>
             <div class="dist">uzak</div>
@@ -275,6 +282,7 @@
 
         <article class="rec" style="--i:3">
           <div class="rail">
+            <svg class="cat-icon" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M24 6c-8 0-15.5 6-18 20 6-2 10.5-6.5 12.5-11"/><path d="M8 26 22 8"/><path d="M12.5 21.5 16 18"/><path d="M16.5 17 19.5 14"/></svg>
             <div class="acc"><span>No.</span> 0104</div>
             <div class="meter" role="img" aria-label="Bu alan 5 gün önce de gelmişti" title="Bu alan 5 gün önce de gelmişti"><span class="tick on"></span><span class="tick"></span><span class="tick"></span></div>
             <div class="dist">yakın</div>
@@ -296,6 +304,7 @@
 
         <article class="rec far" style="--i:4">
           <div class="rail">
+            <svg class="cat-icon" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><ellipse cx="16" cy="16" rx="13" ry="5.5"/><ellipse cx="16" cy="16" rx="13" ry="5.5" transform="rotate(60 16 16)"/><ellipse cx="16" cy="16" rx="13" ry="5.5" transform="rotate(120 16 16)"/><circle cx="16" cy="16" r="1.8" fill="currentColor" stroke="none"/></svg>
             <div class="acc"><span>No.</span> 0105</div>
             <div class="meter" role="img" aria-label="Bu alan fişe ilk kez giriyor" title="Bu alan fişe ilk kez giriyor"><span class="tick on"></span><span class="tick on"></span><span class="tick on"></span></div>
             <div class="dist">uzak</div>
@@ -317,6 +326,7 @@
 
         <article class="rec far" style="--i:5">
           <div class="rail">
+            <svg class="cat-icon" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M24 6c-8 0-15.5 6-18 20 6-2 10.5-6.5 12.5-11"/><path d="M8 26 22 8"/><path d="M12.5 21.5 16 18"/><path d="M16.5 17 19.5 14"/></svg>
             <div class="acc"><span>No.</span> 0106</div>
             <div class="meter" role="img" aria-label="Bu alan 34 gündür gelmemişti" title="Bu alan 34 gündür gelmemişti"><span class="tick on"></span><span class="tick on"></span><span class="tick on"></span></div>
             <div class="dist">uzak</div>
@@ -338,6 +348,7 @@
 
         <article class="rec" style="--i:6">
           <div class="rail">
+            <svg class="cat-icon" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 12 16 5l12 7"/><path d="M8.5 13v10M16 13v10M23.5 13v10"/><path d="M5 23h22M3.5 27h25"/></svg>
             <div class="acc"><span>No.</span> 0107</div>
             <div class="meter" role="img" aria-label="Bu alan 14 gündür gelmemişti" title="Bu alan 14 gündür gelmemişti"><span class="tick on"></span><span class="tick on"></span><span class="tick"></span></div>
             <div class="dist">orta</div>

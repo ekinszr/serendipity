@@ -320,8 +320,8 @@ CSS = """
     --plate: #0c2436;
     --chalk: #e4edf2;
     --body: #c3d4de;
-    --muted: #8aa3b4;
-    --faint: #47657a;
+    --muted: #93aab8;
+    --faint: #7793a6;
     --cyan: #4e9bd1;
     --rust: #d4834f;
     --rule: rgba(138, 163, 180, 0.22);
@@ -331,20 +331,20 @@ CSS = """
   @media (prefers-color-scheme: light) {
     :root {
       --ground: #e9eff2; --plate: #f4f8fa; --chalk: #0b2233; --body: #22414f;
-      --muted: #4d6a7c; --faint: #7d97a6; --cyan: #1f5c8c; --rust: #9c5227;
+      --muted: #3f5c6d; --faint: #55707f; --cyan: #1f5c8c; --rust: #9c5227;
       --rule: rgba(11, 34, 51, 0.18); --hairline: rgba(11, 34, 51, 0.09);
       --glow: rgba(31, 92, 140, 0.08);
     }
   }
   :root[data-theme="light"] {
     --ground: #e9eff2; --plate: #f4f8fa; --chalk: #0b2233; --body: #22414f;
-    --muted: #4d6a7c; --faint: #7d97a6; --cyan: #1f5c8c; --rust: #9c5227;
+    --muted: #3f5c6d; --faint: #55707f; --cyan: #1f5c8c; --rust: #9c5227;
     --rule: rgba(11, 34, 51, 0.18); --hairline: rgba(11, 34, 51, 0.09);
     --glow: rgba(31, 92, 140, 0.08);
   }
   :root[data-theme="dark"] {
     --ground: #071a28; --plate: #0c2436; --chalk: #e4edf2; --body: #c3d4de;
-    --muted: #8aa3b4; --faint: #47657a; --cyan: #4e9bd1; --rust: #d4834f;
+    --muted: #93aab8; --faint: #7793a6; --cyan: #4e9bd1; --rust: #d4834f;
     --rule: rgba(138, 163, 180, 0.22); --hairline: rgba(138, 163, 180, 0.12);
     --glow: rgba(78, 155, 209, 0.14);
   }
@@ -358,7 +358,7 @@ CSS = """
       var(--ground);
     color: var(--body);
     font-family: Spectral, Georgia, "Times New Roman", serif;
-    font-weight: 300;
+    font-weight: 400;
     -webkit-font-smoothing: antialiased;
   }
   a { color: inherit; }
@@ -417,6 +417,10 @@ CSS = """
     font-family: "IBM Plex Mono", ui-monospace, monospace;
     padding-top: 4px;
   }
+  /* kategori ikonu: renk tek basina ayirt edici olmasin diye yaninda
+     her zaman alan adi yazisi durur (marka kitabi kurali) */
+  .cat-icon { width: 26px; height: 26px; color: var(--cyan); flex: none; }
+  .rec.far .cat-icon { color: var(--rust); }
   .acc {
     font-size: 13px; letter-spacing: 0.08em; color: var(--chalk);
     font-variant-numeric: tabular-nums; font-weight: 500;
@@ -530,6 +534,71 @@ JS = """
 """
 
 
+# --------------------------------------------------------------------------
+# Kategori ikonlari (kesif-fisi-brand-book.html'deki illustrasyon sistemi)
+# --------------------------------------------------------------------------
+# Marka kitabi kurali: kategoriyi renk TEK BASINA anlatmasin -- ikon + yazi
+# birlikte tasisin. Kitaptaki 5 ikon aynen korundu; motorun geri kalan 3
+# kategorisi (seckin kurumlar, genel bilim, hakemli) ayni cizgi diliyle
+# (32x32, stroke-width 1.6, dolgusuz) tamamlandi.
+
+_ICON_BODY = {
+    # kurum: alinlik + sutunlar
+    "kurum": '<path d="M4 12 16 5l12 7"/><path d="M8.5 13v10M16 13v10M23.5 13v10"/>'
+             '<path d="M5 23h22M3.5 27h25"/>',
+    # tasarim: tuy kalem (marka kitabindan)
+    "kalem": '<path d="M24 6c-8 0-15.5 6-18 20 6-2 10.5-6.5 12.5-11"/><path d="M8 26 22 8"/>'
+             '<path d="M12.5 21.5 16 18"/><path d="M16.5 17 19.5 14"/>',
+    # karmasik sistemler: yorungeler (marka kitabindan)
+    "yorunge": '<ellipse cx="16" cy="16" rx="13" ry="5.5"/>'
+               '<ellipse cx="16" cy="16" rx="13" ry="5.5" transform="rotate(60 16 16)"/>'
+               '<ellipse cx="16" cy="16" rx="13" ry="5.5" transform="rotate(120 16 16)"/>'
+               '<circle cx="16" cy="16" r="1.8" fill="currentColor" stroke="none"/>',
+    # genel bilim: acik dergi
+    "dergi": '<path d="M16 9.5C13 7 9 6.5 4.5 7v17c4.5-.5 8.5 0 11.5 2.5 3-2.5 7-3 11.5-2.5V7C23 6.5 19 7 16 9.5z"/>'
+             '<path d="M16 9.5v17"/>',
+    # teknoloji ve toplum: dugum agi
+    "ag": '<circle cx="16" cy="6.5" r="2.6"/><circle cx="6.5" cy="23" r="2.6"/>'
+          '<circle cx="25.5" cy="23" r="2.6"/><path d="M14.2 8.8 8.3 20.7M17.8 8.8l5.9 11.9M9.1 23h13.8"/>',
+    # politika ve ekonomi: terazi (marka kitabindan)
+    "terazi": '<path d="M16 4v23M7 9h18"/><path d="M4.5 17a6 6 0 0 0 11 0L10 9z"/>'
+              '<path d="M16.5 17a6 6 0 0 0 11 0L22 9z"/><path d="M11 27h10"/>',
+    # hakemli: onaylanmis sayfa
+    "onay": '<path d="M7 4h13l5 5v19H7z"/><path d="M20 4v5h5"/>'
+            '<path d="m11.5 18.5 3 3 6.5-7"/>',
+    # on-baski: deney sisesi (marka kitabindan)
+    "sise": '<path d="M13 4h6M14 4v6.5L7 22a3 3 0 0 0 3 4h12a3 3 0 0 0 3-4l-7-11.5V4"/>'
+            '<path d="M10.5 19h11"/>',
+}
+
+# anahtar kelime -> ikon (feeds.json adlari degisse de tutar)
+_ICON_RULES = [
+    ("seckin", "kurum"), ("kurum", "kurum"),
+    ("tasarim", "kalem"), ("yaratici", "kalem"),
+    ("karmasik", "yorunge"), ("sistem", "yorunge"),
+    ("on-baski", "sise"), ("arxiv", "sise"), ("preprint", "sise"),
+    ("hakemli", "onay"),
+    ("genel bilim", "dergi"), ("bilim", "dergi"),
+    ("teknoloji", "ag"), ("toplum", "ag"),
+    ("politika", "terazi"), ("ekonomi", "terazi"),
+]
+
+_TR_SADE = str.maketrans("çğıöşüÇĞİÖŞÜ", "cgiosuCGIOSU")
+
+
+def _cat_icon(category: str) -> str:
+    """Kategoriye karsilik gelen cizgi ikon. Eslesme yoksa notr bir isaret."""
+    key = (category or "").translate(_TR_SADE).lower()
+    body = _ICON_BODY["yorunge"]
+    for needle, icon in _ICON_RULES:
+        if needle in key:
+            body = _ICON_BODY[icon]
+            break
+    return (f'<svg class="cat-icon" viewBox="0 0 32 32" fill="none" stroke="currentColor" '
+            f'stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" '
+            f'aria-hidden="true" focusable="false">{body}</svg>')
+
+
 def _distance(art: dict):
     """Fise yazilan uzaklik: OLCUM, tahmin degil.
     Su an olcu = bu kesif alani en son ne zaman fise girdi.
@@ -567,6 +636,7 @@ def render_html(selected: list, run_date: str, accession_start: int) -> str:
         entries.append(f"""
         <article class="rec{' far' if ticks == 3 else ''}" style="--i:{i}">
           <div class="rail">
+            {_cat_icon(art.get("category", ""))}
             <div class="acc"><span>No.</span> {acc}</div>
             <div class="meter" role="img" aria-label="{_esc(explain)}" title="{_esc(explain)}">{meter}</div>
             <div class="dist">{word}</div>
