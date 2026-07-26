@@ -1,19 +1,28 @@
 {
   "seen_ids": [
     "d5854e2b9cc84170",
-    "ed79320af2bdb52e",
-    "5765b471cf928609",
     "bc96338aa9b76158",
+    "5e7ce0cbda8279e7",
+    "ed768cbb6e3f44d0",
+    "2ee1be5f83cf0dcb",
+    "5765b471cf928609",
+    "0743374f64c3acde",
+    "925e6f705b3953a0",
+    "f81b9948c5d93cd8",
     "8908ecc8faa443dc",
     "9fd01e584398241b",
-    "925e6f705b3953a0"
+    "01e913b540eb2685",
+    "6681bf2bfd3a5be1",
+    "ed79320af2bdb52e"
   ],
   "category_last_used": {
     "Karmasik Sistemler ve Bilim": 1785012392.08358,
-    "Akademik Calismalar (Hakemli)": 1785012392.08358,
+    "Akademik Calismalar (Hakemli)": 1785060930.8573716,
     "Seckin Kurumlardan Yeni Calismalar": 1785012392.08358,
     "Genel Bilim": 1785012392.08358,
-    "Politika ve Ekonomi (Dusunce Kuruluslari)": 1785012392.08358
+    "Politika ve Ekonomi (Dusunce Kuruluslari)": 1785060930.8573716,
+    "Tasarim ve Yaratici Dusunce": 1785060930.8573716,
+    "Teknoloji ve Toplum": 1785060930.8573716
   },
   "history": [
     {
@@ -26,6 +35,18 @@
         "Inside the fight against the parasite Cyclospora",
         "A genetically encoded sensor of ionic stress links cellular proton dynamics to sleep",
         "Comparative single-nucleus transcriptomics reveals asymmetric evolution of the <i>Drosophila</i> male and female germlines"
+      ]
+    },
+    {
+      "date": "26 Temmuz 2026",
+      "titles": [
+        "Being lonely taught me how to be me",
+        "How we measured Americans’ engagement in public life",
+        "Serial dependence predicts generalization in perceptual learning",
+        "How an influx of salt may affect microbial ecosystems",
+        "With help from data, art museums are reframing the visitor experience",
+        "The people’s atheist",
+        "How was the first language formed?"
       ]
     }
   ]
