@@ -12,6 +12,7 @@ Kullanim:
 import argparse
 import hashlib
 import json
+import os
 import random
 import re
 import time
@@ -92,14 +93,19 @@ def default_state():
 # calismalari dogrudan ceker. "En iyi kurumlardan en yeni fikirler" hedefinin
 # asil motoru budur -- RSS'in aksine kaynaga gore filtreler ve abstract verir.
 OPENALEX_API = "https://api.openalex.org"
-OPENALEX_MAILTO = "you@example.com"  # nazik kullanim havuzu (polite pool)
+# OpenAlex "polite pool": istek basina bir iletisim adresi bekler ve karsiliginda
+# daha yuksek hiz siniri verir. Adres repoda durmasin diye ortamdan okunur
+# (yerelde export, Actions icinde secret). Yoksa istek yine calisir, sadece
+# nazik havuzun disinda kalir.
+OPENALEX_MAILTO = os.environ.get("OPENALEX_MAILTO", "").strip()
 
 
 def _openalex_get(path: str) -> dict:
     import json as _json
     url = f"{OPENALEX_API}/{path}"
-    sep = "&" if "?" in url else "?"
-    url = f"{url}{sep}mailto={OPENALEX_MAILTO}"
+    if OPENALEX_MAILTO:
+        sep = "&" if "?" in url else "?"
+        url = f"{url}{sep}mailto={OPENALEX_MAILTO}"
     req = urllib.request.Request(url, headers={"User-Agent": USER_AGENT})
     return _json.loads(urllib.request.urlopen(req, timeout=25).read())
 
