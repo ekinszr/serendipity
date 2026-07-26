@@ -244,6 +244,10 @@ def select_serendipitous(pool: dict, feeds_config: dict, state: dict, count: int
         candidates[category] = {
             "articles": unseen,
             "score": base_weight * (1 + recency_boost),
+            # fise yazilacak GERCEK uzaklik sinyali: bu alan en son ne zaman geldi.
+            # (v2'de embedding mesafesi gelene kadar uydurma degil, olcum kullanilir)
+            "gap_days": days_since,
+            "first_time": not last_used,
         }
 
     selected = []
@@ -260,6 +264,8 @@ def select_serendipitous(pool: dict, feeds_config: dict, state: dict, count: int
         preferred = [a for a in pool_articles if a["source"] not in used_sources_this_run]
         article = random.choice(preferred if preferred else pool_articles)
 
+        article["field_gap_days"] = candidates[chosen_cat]["gap_days"]
+        article["field_first_time"] = candidates[chosen_cat]["first_time"]
         selected.append(article)
         used_sources_this_run.add(article["source"])
         candidates[chosen_cat]["articles"].remove(article)
@@ -279,186 +285,435 @@ def select_serendipitous(pool: dict, feeds_config: dict, state: dict, count: int
 # 3. HTML cikti
 # --------------------------------------------------------------------------
 
+TR_AYLAR = ["Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran", "Temmuz",
+            "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık"]
+
+
+def tr_date(dt) -> str:
+    """Fiste tarih Turkce yazilir (locale'e guvenmeden)."""
+    return f"{dt.day} {TR_AYLAR[dt.month - 1]} {dt.year}"
+
+
 def _esc(s: str) -> str:
     return (s or "").replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
 
 
+# --------------------------------------------------------------------------
+# Tasarim: "siyanotip arsivi"
+# Prusya mavisi zemin + tebesir beyazi + siyanotip mavisi; tek sicak sinyal
+# rengi (pas) yalnizca "uzak/ilk kez" isaretinde kullanilir.
+# Bodoni Moda (levha basligi) + Spectral (yem metni) + IBM Plex Mono (etiket).
+# --------------------------------------------------------------------------
+
+FONTS_HREF = (
+    "https://fonts.googleapis.com/css2"
+    "?family=Bodoni+Moda:opsz,wght@6..96,400;6..96,500;6..96,600"
+    "&family=Spectral:ital,wght@0,300;0,400;0,500;1,400"
+    "&family=IBM+Plex+Mono:wght@400;500;600"
+    "&display=swap"
+)
+
+CSS = """
+  /* --- jetonlar: varsayilan = siyanotip baskisi (koyu) --- */
+  :root {
+    --ground: #071a28;
+    --plate: #0c2436;
+    --chalk: #e4edf2;
+    --body: #c3d4de;
+    --muted: #8aa3b4;
+    --faint: #47657a;
+    --cyan: #4e9bd1;
+    --rust: #d4834f;
+    --rule: rgba(138, 163, 180, 0.22);
+    --hairline: rgba(138, 163, 180, 0.12);
+    --glow: rgba(78, 155, 209, 0.14);
+  }
+  @media (prefers-color-scheme: light) {
+    :root {
+      --ground: #e9eff2; --plate: #f4f8fa; --chalk: #0b2233; --body: #22414f;
+      --muted: #4d6a7c; --faint: #7d97a6; --cyan: #1f5c8c; --rust: #9c5227;
+      --rule: rgba(11, 34, 51, 0.18); --hairline: rgba(11, 34, 51, 0.09);
+      --glow: rgba(31, 92, 140, 0.08);
+    }
+  }
+  :root[data-theme="light"] {
+    --ground: #e9eff2; --plate: #f4f8fa; --chalk: #0b2233; --body: #22414f;
+    --muted: #4d6a7c; --faint: #7d97a6; --cyan: #1f5c8c; --rust: #9c5227;
+    --rule: rgba(11, 34, 51, 0.18); --hairline: rgba(11, 34, 51, 0.09);
+    --glow: rgba(31, 92, 140, 0.08);
+  }
+  :root[data-theme="dark"] {
+    --ground: #071a28; --plate: #0c2436; --chalk: #e4edf2; --body: #c3d4de;
+    --muted: #8aa3b4; --faint: #47657a; --cyan: #4e9bd1; --rust: #d4834f;
+    --rule: rgba(138, 163, 180, 0.22); --hairline: rgba(138, 163, 180, 0.12);
+    --glow: rgba(78, 155, 209, 0.14);
+  }
+
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    background:
+      radial-gradient(140% 90% at 82% -10%, var(--glow) 0%, transparent 60%),
+      var(--ground);
+    color: var(--body);
+    font-family: Spectral, Georgia, "Times New Roman", serif;
+    font-weight: 300;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; }
+  :focus-visible { outline: 2px solid var(--cyan); outline-offset: 3px; border-radius: 2px; }
+
+  .sheet {
+    max-width: 880px;
+    margin: 0 auto;
+    padding: clamp(26px, 5vw, 64px) clamp(18px, 5vw, 44px) 88px;
+  }
+
+  /* --- kunye: katalog karti --- */
+  .plate-head { border-bottom: 1px solid var(--rule); padding-bottom: clamp(20px, 4vw, 32px); }
+  .stamp {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 11px; letter-spacing: 0.26em; text-transform: uppercase;
+    color: var(--cyan);
+    display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px;
+    padding-bottom: clamp(18px, 4vw, 30px);
+  }
+  h1 {
+    font-family: "Bodoni Moda", Didot, "Bodoni MT", Georgia, serif;
+    font-optical-sizing: auto;
+    font-size: clamp(44px, 10vw, 88px);
+    line-height: 1.04; margin: 0; font-weight: 400;
+    color: var(--chalk); letter-spacing: -0.015em;
+    text-wrap: balance;
+  }
+  h1 .thin { display: block; font-style: italic; font-weight: 400; color: var(--cyan); }
+  .standfirst {
+    margin: clamp(18px, 3vw, 26px) 0 0;
+    max-width: 54ch; font-size: 17px; line-height: 1.62; color: var(--muted);
+  }
+  .fields {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(112px, 1fr));
+    gap: 2px 18px; margin-top: clamp(22px, 4vw, 34px);
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-variant-numeric: tabular-nums;
+  }
+  .fields dt {
+    font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--faint); margin-bottom: 5px;
+  }
+  .fields dd { margin: 0 0 6px; font-size: 15px; color: var(--chalk); font-weight: 500; }
+
+  /* --- kayitlar --- */
+  .records { display: flex; flex-direction: column; }
+  .rec {
+    display: grid; grid-template-columns: 92px 1fr;
+    gap: clamp(14px, 3vw, 28px);
+    padding: clamp(28px, 4vw, 40px) 0;
+    border-bottom: 1px solid var(--hairline);
+  }
+  .rail {
+    display: flex; flex-direction: column; gap: 10px;
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    padding-top: 4px;
+  }
+  .acc {
+    font-size: 13px; letter-spacing: 0.08em; color: var(--chalk);
+    font-variant-numeric: tabular-nums; font-weight: 500;
+  }
+  .acc span { color: var(--faint); }
+  .meter { display: flex; gap: 3px; }
+  .tick { width: 14px; height: 3px; background: var(--hairline); border-radius: 1px; }
+  .tick.on { background: var(--cyan); }
+  .rec.far .tick.on { background: var(--rust); }
+  .dist {
+    font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--faint);
+  }
+  .rec.far .dist { color: var(--rust); }
+
+  .field-label {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 10.5px; letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--cyan); margin-bottom: 12px;
+  }
+  .rec-title {
+    font-family: "Bodoni Moda", Didot, "Bodoni MT", Georgia, serif;
+    font-optical-sizing: auto;
+    margin: 0 0 14px; font-weight: 400;
+    font-size: clamp(24px, 4.2vw, 34px); line-height: 1.16;
+    letter-spacing: -0.005em; color: var(--chalk); text-wrap: balance;
+  }
+  .rec-title a {
+    text-decoration: none;
+    background: linear-gradient(var(--cyan), var(--cyan)) no-repeat;
+    background-size: 0% 1px; background-position: 0 92%;
+    transition: background-size 0.4s cubic-bezier(0.2, 0.7, 0.2, 1), color 0.2s ease;
+  }
+  .rec:hover .rec-title a { background-size: 100% 1px; }
+  .rec-title a:hover { color: var(--cyan); }
+  .hook { margin: 0 0 20px; font-size: 17.5px; line-height: 1.68; max-width: 62ch; }
+
+  .rec-foot {
+    display: flex; justify-content: space-between; align-items: center;
+    gap: 12px 20px; flex-wrap: wrap;
+    font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 11.5px;
+  }
+  .src { letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); }
+  .src .lure { color: var(--cyan); margin-left: 6px; }
+  .acts { display: flex; align-items: center; gap: 6px; }
+  .vote {
+    font: inherit; font-size: 11px; letter-spacing: 0.1em;
+    background: none; border: 1px solid var(--hairline); color: var(--faint);
+    padding: 5px 10px; border-radius: 2px; cursor: pointer;
+    transition: color 0.18s ease, border-color 0.18s ease, background 0.18s ease;
+  }
+  .vote:hover { color: var(--chalk); border-color: var(--rule); }
+  .vote[aria-pressed="true"] { color: var(--ground); background: var(--cyan); border-color: var(--cyan); }
+  .vote.no[aria-pressed="true"] { background: var(--rust); border-color: var(--rust); }
+  .go {
+    text-decoration: none; color: var(--cyan); font-weight: 500;
+    letter-spacing: 0.08em; white-space: nowrap; margin-left: 8px;
+  }
+  .go:hover { text-decoration: underline; text-underline-offset: 3px; }
+
+  /* --- alt bilgi --- */
+  .colophon {
+    margin-top: clamp(34px, 5vw, 52px);
+    display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap;
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 11px; line-height: 1.7; color: var(--faint);
+  }
+  .colophon p { margin: 0; max-width: 46ch; }
+  .colophon a { color: var(--cyan); }
+
+  @media (max-width: 560px) {
+    .rec { grid-template-columns: 1fr; gap: 12px; }
+    .rail { flex-direction: row; align-items: center; gap: 12px; }
+    .rec-foot { align-items: flex-start; flex-direction: column; }
+    .go { margin-left: 0; }
+  }
+
+  /* --- hareket: yalnizca yuklenirken tek bir sirali aciliş --- */
+  @media (prefers-reduced-motion: no-preference) {
+    .rec { animation: rise 0.5s cubic-bezier(0.2, 0.7, 0.2, 1) both; animation-delay: calc(var(--i) * 60ms); }
+    @keyframes rise { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+  }
+"""
+
+JS = """
+  // Geri bildirim yerelde tutulur (Kademe 2'de sunucuya baglanacak).
+  // Amaci konu ogrenmek degil, kalibrasyon: hangi mesafe iyi geldi.
+  (function () {
+    var KEY = "serendipity-oy";
+    var store = {};
+    try { store = JSON.parse(localStorage.getItem(KEY) || "{}"); } catch (e) { store = {}; }
+
+    function paint() {
+      document.querySelectorAll(".vote").forEach(function (b) {
+        b.setAttribute("aria-pressed", String(store[b.dataset.acc] === b.dataset.vote));
+      });
+      var n = Object.keys(store).length;
+      var tally = document.getElementById("tally");
+      if (tally) tally.textContent = n ? n + " kayda not düşüldü" : "Henüz not düşülmedi";
+    }
+
+    document.querySelectorAll(".vote").forEach(function (b) {
+      b.addEventListener("click", function () {
+        var acc = b.dataset.acc;
+        if (store[acc] === b.dataset.vote) { delete store[acc]; } else { store[acc] = b.dataset.vote; }
+        try { localStorage.setItem(KEY, JSON.stringify(store)); } catch (e) {}
+        paint();
+      });
+    });
+    paint();
+  })();
+"""
+
+
+def _distance(art: dict):
+    """Fise yazilan uzaklik: OLCUM, tahmin degil.
+    Su an olcu = bu kesif alani en son ne zaman fise girdi.
+    (v2'de embedding mesafesi bunun yerini alacak.)"""
+    if art.get("field_first_time"):
+        return 3, "uzak", "Bu alan fişe ilk kez giriyor"
+    gap = art.get("field_gap_days")
+    if gap is None:
+        return 0, "&mdash;", "Bu alan için geçmiş kaydı yok"
+    days = int(round(gap))
+    if gap < 7:
+        return 1, "yakın", f"Bu alan {days} gün önce de gelmişti"
+    if gap < 21:
+        return 2, "orta", f"Bu alan {days} gündür gelmemişti"
+    return 3, "uzak", f"Bu alan {days} gündür gelmemişti"
+
+
 def render_html(selected: list, run_date: str, accession_start: int) -> str:
-    # ust bilgi: kac alan, seckin kurum sayisi
     fields = []
     for a in selected:
         if a.get("category") and a["category"] not in fields:
             fields.append(a["category"])
+
+    far_count = 0
     entries = []
     for i, art in enumerate(selected):
-        numeral = f"{i + 1:02d}"
-        summary = _esc(art.get("summary") or "Ozet yok — kaynaga gidin.")
-        title = _esc(art.get("title", ""))
-        cat = _esc(art.get("category", ""))
-        source = _esc(art.get("source", ""))
-        link = art.get("link", "#")
-        spark = '<span class="spark" title="merak-acici yem">&#10022;</span>' if art.get("enriched") else ""
+        acc = f"{accession_start + i + 1:04d}"
+        ticks, word, explain = _distance(art)
+        if ticks == 3:
+            far_count += 1
+        meter = "".join(
+            f'<span class="tick{" on" if t < ticks else ""}"></span>' for t in range(3)
+        )
+        lure = '<span class="lure" title="merak açıcı yem">&#10022;</span>' if art.get("enriched") else ""
         entries.append(f"""
-      <article class="entry">
-        <div class="num" aria-hidden="true">{numeral}</div>
-        <div class="body">
-          <div class="eyebrow">{cat}</div>
-          <h2 class="title"><a href="{link}" target="_blank" rel="noopener">{title}</a></h2>
-          <p class="hook">{summary} {spark}</p>
-          <div class="meta">
-            <span class="source">{source}</span>
-            <a class="go" href="{link}" target="_blank" rel="noopener">Kaynaga git &rarr;</a>
+        <article class="rec{' far' if ticks == 3 else ''}" style="--i:{i}">
+          <div class="rail">
+            <div class="acc"><span>No.</span> {acc}</div>
+            <div class="meter" role="img" aria-label="{_esc(explain)}" title="{_esc(explain)}">{meter}</div>
+            <div class="dist">{word}</div>
           </div>
-        </div>
-      </article>""")
+          <div class="rec-body">
+            <div class="field-label">{_esc(art.get("category", ""))}</div>
+            <h2 class="rec-title"><a href="{art.get("link", "#")}" target="_blank" rel="noopener">{_esc(art.get("title", ""))}</a></h2>
+            <p class="hook">{_esc(art.get("summary") or "Özet yok &mdash; kaynağa gidin.")}</p>
+            <div class="rec-foot">
+              <span class="src">{_esc(art.get("source", ""))}{lure}</span>
+              <div class="acts">
+                <button class="vote" type="button" data-acc="{acc}" data-vote="up" aria-pressed="false">&#10022; vay</button>
+                <button class="vote no" type="button" data-acc="{acc}" data-vote="down" aria-pressed="false">&#10005; alakasız</button>
+                <a class="go" href="{art.get("link", "#")}" target="_blank" rel="noopener">Kaynağa git &rarr;</a>
+              </div>
+            </div>
+          </div>
+        </article>""")
 
+    issue = f"{(accession_start // 100) + 1:03d}"
     entries_html = "\n".join(entries)
-    issue = f"{accession_start // 100:03d}" if accession_start else "001"
 
     return f"""<!DOCTYPE html>
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Kesif Fisi &middot; {run_date}</title>
+<title>Keşif Fişi &middot; {run_date}</title>
+<meta name="description" content="Haftalık keşif fişi: güvenilir kaynaklardan ilgili ama beklenmedik okumalar.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,500&family=Space+Grotesk:wght@400;500;600&display=swap" rel="stylesheet">
-<style>
-  :root {{
-    --bg: #14110c;
-    --bg2: #1b1710;
-    --paper: #efe7d6;
-    --muted: #a99e88;
-    --faint: #6f6653;
-    --gold: #e2a44e;
-    --line: #332c20;
-    --rule: #3d3527;
-  }}
-  * {{ box-sizing: border-box; }}
-  html {{ -webkit-text-size-adjust: 100%; }}
-  body {{
-    margin: 0;
-    background:
-      radial-gradient(120% 80% at 100% 0%, #211a10 0%, rgba(33,26,16,0) 55%),
-      var(--bg);
-    color: var(--paper);
-    font-family: 'Fraunces', Georgia, serif;
-    -webkit-font-smoothing: antialiased;
-  }}
-  a {{ color: inherit; }}
-  .wrap {{ max-width: 800px; margin: 0 auto; padding: clamp(28px, 6vw, 72px) clamp(20px, 5vw, 40px) 96px; }}
-
-  /* masthead */
-  .masthead {{ border-bottom: 2px solid var(--gold); padding-bottom: 18px; margin-bottom: 8px; }}
-  .kicker {{
-    font-family: 'Space Grotesk', sans-serif;
-    font-size: 12px; letter-spacing: 0.32em; text-transform: uppercase;
-    color: var(--gold); margin: 0 0 14px;
-    display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px;
-  }}
-  h1 {{
-    font-size: clamp(46px, 12vw, 92px);
-    line-height: 0.92; margin: 0; font-weight: 600;
-    letter-spacing: -0.02em;
-    font-variation-settings: 'opsz' 120;
-  }}
-  h1 em {{ font-style: italic; font-weight: 500; color: var(--gold); }}
-  .standfirst {{
-    font-family: 'Space Grotesk', sans-serif;
-    color: var(--muted); font-size: 14px; line-height: 1.5;
-    margin: 16px 0 0; max-width: 46ch;
-  }}
-  .runbar {{
-    display: flex; gap: 22px; flex-wrap: wrap;
-    font-family: 'Space Grotesk', sans-serif; font-size: 12px; letter-spacing: 0.04em;
-    color: var(--faint); margin: 40px 0 8px; text-transform: uppercase;
-  }}
-  .runbar b {{ color: var(--paper); font-weight: 500; }}
-
-  /* entries */
-  .entry {{
-    display: grid; grid-template-columns: minmax(64px, 92px) 1fr;
-    gap: clamp(14px, 3vw, 30px);
-    padding: 34px 0; border-top: 1px solid var(--rule);
-    position: relative;
-  }}
-  .entry:first-of-type {{ border-top: none; }}
-  .num {{
-    font-size: clamp(40px, 9vw, 72px); line-height: 0.9;
-    font-weight: 500; color: transparent;
-    -webkit-text-stroke: 1px var(--faint);
-    font-variation-settings: 'opsz' 72;
-    padding-top: 4px; user-select: none;
-  }}
-  .eyebrow {{
-    font-family: 'Space Grotesk', sans-serif;
-    font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase;
-    color: var(--gold); margin-bottom: 10px;
-  }}
-  .title {{ margin: 0 0 12px; font-size: clamp(23px, 4.4vw, 33px); line-height: 1.14; font-weight: 600; letter-spacing: -0.01em; }}
-  .title a {{ text-decoration: none; background: linear-gradient(var(--gold), var(--gold)) no-repeat; background-size: 0% 1.5px; background-position: 0 100%; transition: background-size .35s ease, color .2s ease; }}
-  .entry:hover .title a {{ background-size: 100% 1.5px; }}
-  .title a:hover {{ color: var(--gold); }}
-  .hook {{ font-size: 17px; line-height: 1.62; color: #d8cfbc; margin: 0 0 18px; max-width: 58ch; }}
-  .spark {{ color: var(--gold); font-size: 13px; vertical-align: 2px; }}
-  .meta {{
-    display: flex; justify-content: space-between; align-items: center; gap: 14px; flex-wrap: wrap;
-    font-family: 'Space Grotesk', sans-serif; font-size: 12.5px; letter-spacing: 0.02em;
-  }}
-  .source {{ color: var(--muted); text-transform: uppercase; letter-spacing: 0.1em; font-size: 11.5px; }}
-  .go {{ color: var(--gold); text-decoration: none; font-weight: 600; white-space: nowrap; }}
-  .go:hover {{ text-decoration: underline; }}
-
-  footer {{
-    margin-top: 56px; padding-top: 20px; border-top: 1px solid var(--rule);
-    font-family: 'Space Grotesk', sans-serif; font-size: 12px; line-height: 1.6;
-    color: var(--faint); text-align: center;
-  }}
-
-  /* light mode */
-  @media (prefers-color-scheme: light) {{
-    :root {{
-      --bg: #f3ede0; --bg2: #fbf7ee; --paper: #211d15; --muted: #6b6350;
-      --faint: #a89c82; --gold: #9a6b21; --line: #ddd3bd; --rule: #ddd2ba;
-    }}
-    body {{ background: radial-gradient(120% 80% at 100% 0%, #efe6d1 0%, rgba(239,230,209,0) 55%), var(--bg); }}
-    .hook {{ color: #453d2c; }}
-  }}
-  :root[data-theme="light"] {{
-    --bg: #f3ede0; --paper: #211d15; --muted: #6b6350; --faint: #a89c82;
-    --gold: #9a6b21; --rule: #ddd2ba;
-  }}
-  :root[data-theme="light"] body {{ background: radial-gradient(120% 80% at 100% 0%, #efe6d1 0%, rgba(239,230,209,0) 55%), var(--bg); }}
-  :root[data-theme="light"] .hook {{ color: #453d2c; }}
-  :root[data-theme="dark"] {{
-    --bg: #14110c; --paper: #efe7d6; --muted: #a99e88; --faint: #6f6653;
-    --gold: #e2a44e; --rule: #3d3527;
-  }}
-
-  @media (max-width: 520px) {{
-    .entry {{ grid-template-columns: 1fr; gap: 6px; }}
-    .num {{ font-size: 34px; -webkit-text-stroke: 1px var(--gold); color: transparent; }}
-  }}
-</style>
+<link href="{FONTS_HREF}" rel="stylesheet">
+<style>{CSS}</style>
 </head>
 <body>
-  <div class="wrap">
-    <header class="masthead">
-      <div class="kicker"><span>Serendipity &middot; Kesif Fisi</span><span>No. {issue}</span></div>
-      <h1>Kesif<br><em>Fisi</em></h1>
-      <p class="standfirst">Seckin kurumlardan, hakemli dergilerden ve fikir yazilarindan &mdash; kontrollu rastgelelikle secilmis, ilgili ama beklenmedik okumalar.</p>
-      <div class="runbar">
-        <span>{run_date}</span>
-        <span><b>{len(selected)}</b> kesif</span>
-        <span><b>{len(fields)}</b> alan</span>
-      </div>
+  <main class="sheet">
+    <header class="plate-head">
+      <div class="stamp"><span>Serendipity &middot; Keşif Fişi</span><span>Levha {issue}</span></div>
+      <h1>Keşif<span class="thin">Fişi</span></h1>
+      <p class="standfirst">Seçkin kurumlardan, hakemli dergilerden ve fikir yazılarından &mdash;
+      kontrollü rastgelelikle seçilmiş, ilgili ama beklenmedik okumalar.</p>
+      <dl class="fields">
+        <div><dt>Tarih</dt><dd>{run_date}</dd></div>
+        <div><dt>Kayıt</dt><dd>{len(selected)}</dd></div>
+        <div><dt>Alan</dt><dd>{len(fields)}</dd></div>
+        <div><dt>Uzak</dt><dd>{far_count}</dd></div>
+      </dl>
     </header>
-    {entries_html}
-    <footer>Gorulmemis kaynaklar arasindan agirlikli-rastgele secildi. Serendipity: aramadan bulmak.</footer>
-  </div>
+    <div class="records">{entries_html}
+    </div>
+    <footer class="colophon">
+      <p>Görülmemiş kaynaklar arasından ağırlıklı-rastgele seçildi. Soldaki çentikler
+      uzaklığı gösterir: o keşif alanı ne kadar zamandır fişe girmemiş.</p>
+      <p id="tally">Henüz not düşülmedi</p>
+    </footer>
+  </main>
+<script>{JS}</script>
 </body>
 </html>"""
+
+
+# --------------------------------------------------------------------------
+# 4. E-posta tetigi (Kademe 2)
+# --------------------------------------------------------------------------
+# E-posta haberci, fis degil: sadece basliklar (yem YOK -- merak fise tiklatsin),
+# tek buyuk buton, tablo-tabanli HTML, web font yok (Georgia). Istemcilerin
+# CSS'i kirdigi varsayilir; her sey inline stil.
+
+PAGE_URL = "https://ekinszr.github.io/serendipity/"
+
+
+def render_email(selected: list, run_date: str, page_url: str = PAGE_URL) -> tuple:
+    """(konu, html) doner. Konu her hafta degisir ki gelen kutusunda korlesmesin."""
+    fields = []
+    for a in selected:
+        if a.get("category") and a["category"] not in fields:
+            fields.append(a["category"])
+    far = [a for a in selected if _distance(a)[0] == 3]
+
+    # konu satiri: o haftanin kendi verisinden dogar, sablon degil
+    if far:
+        subject = f"Keşif Fişi · {len(far)} tanesi uzaktan geldi"
+    elif len(fields) >= 5:
+        subject = f"Keşif Fişi · {len(fields)} ayrı alandan {len(selected)} okuma"
+    else:
+        subject = f"Keşif Fişi · {run_date}"
+
+    # istah acici satir: kategori adlarini tekrarlamak yerine fisin sekli
+    appetizer = f"{len(fields)} ayrı alandan {len(selected)} okuma"
+    if far:
+        appetizer += f", {len(far)} tanesi uzun süredir uğramadığın bir alandan"
+
+    rows = []
+    for a in selected:
+        rows.append(f"""
+              <tr><td style="padding:0 0 18px;border-bottom:1px solid #d3dee4;">
+                <div style="font:11px/1.4 Menlo,Consolas,monospace;letter-spacing:.16em;text-transform:uppercase;color:#1f5c8c;padding-bottom:6px;">{_esc(a.get("category",""))}</div>
+                <a href="{a.get("link","#")}" style="font:400 20px/1.3 Georgia,'Times New Roman',serif;color:#0b2233;text-decoration:none;">{_esc(a.get("title",""))}</a>
+                <div style="font:11px/1.4 Menlo,Consolas,monospace;letter-spacing:.12em;text-transform:uppercase;color:#6d8798;padding-top:7px;">{_esc(a.get("source",""))}</div>
+              </td></tr>
+              <tr><td style="height:18px;line-height:18px;">&nbsp;</td></tr>""")
+
+    html = f"""<!DOCTYPE html>
+<html lang="tr">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>{_esc(subject)}</title></head>
+<body style="margin:0;padding:0;background:#e9eff2;">
+  <div style="display:none;max-height:0;overflow:hidden;opacity:0;">{_esc(appetizer)}</div>
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#e9eff2;">
+    <tr><td align="center" style="padding:28px 16px 48px;">
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:520px;background:#f6f9fb;">
+
+        <tr><td style="background:#071a28;padding:26px 28px;">
+          <div style="font:11px/1.4 Menlo,Consolas,monospace;letter-spacing:.26em;text-transform:uppercase;color:#4e9bd1;">Serendipity · Keşif Fişi</div>
+          <div style="font:400 34px/1.1 Georgia,'Times New Roman',serif;color:#e4edf2;padding-top:10px;">Bu haftanın fişi hazır</div>
+          <div style="font:italic 15px/1.5 Georgia,serif;color:#8aa3b4;padding-top:10px;">{_esc(appetizer)}</div>
+        </td></tr>
+
+        <tr><td style="padding:28px 28px 6px;">
+          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+            {"".join(rows)}
+          </table>
+        </td></tr>
+
+        <tr><td align="center" style="padding:10px 28px 34px;">
+          <table role="presentation" cellpadding="0" cellspacing="0" border="0"><tr>
+            <td align="center" bgcolor="#1f5c8c" style="border-radius:2px;">
+              <a href="{page_url}" style="display:inline-block;padding:15px 34px;font:600 13px/1 Menlo,Consolas,monospace;letter-spacing:.18em;text-transform:uppercase;color:#f6f9fb;text-decoration:none;">Fişi aç &rarr;</a>
+            </td>
+          </tr></table>
+          <div style="font:12px/1.6 Menlo,Consolas,monospace;color:#7d97a6;padding-top:16px;">
+            Yem özetler ve uzaklık çentikleri fişte.
+          </div>
+        </td></tr>
+
+        <tr><td style="padding:0 28px 26px;border-top:1px solid #d3dee4;">
+          <div style="font:11px/1.7 Menlo,Consolas,monospace;color:#7d97a6;padding-top:16px;">
+            {run_date} · {len(selected)} kayıt · {len(fields)} alan · görülmemiş kaynaklardan ağırlıklı-rastgele seçildi.
+          </div>
+        </td></tr>
+
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>"""
+    return subject, html
 
 
 # --------------------------------------------------------------------------
@@ -502,7 +757,7 @@ def main():
     # state guncelle
     state["seen_ids"].extend([a["id"] for a in selected])
     state["seen_ids"] = list(set(state["seen_ids"]))[-2000:]  # sinirsiz buyumesin
-    run_date = datetime.now(timezone.utc).astimezone().strftime("%d %B %Y")
+    run_date = tr_date(datetime.now(timezone.utc).astimezone())
     state["history"].append({
         "date": run_date,
         "titles": [a["title"] for a in selected],

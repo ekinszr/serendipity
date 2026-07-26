@@ -4,7 +4,7 @@ Gercek, guncel makaleler + elle yazilmis Turkce yemler ile yeni tasarimi basar.
 Calistir:  .venv/bin/python demo_enriched.py  ->  output/yem-ornek.html
 """
 from datetime import datetime, timezone
-from digest import render_html
+from digest import render_html, render_email, tr_date
 
 selected = [
     {
@@ -74,8 +74,20 @@ selected = [
     },
 ]
 
-run_date = datetime.now(timezone.utc).astimezone().strftime("%d %B %Y")
+# Ornek fis: uzaklik centiklerinin uc halini de gostersin diye alan-araligi
+# degerleri elle verildi (gercek koşuda bunu select_serendipitous olcer).
+gaps = [3, 11, 26, 5, None, 34, 14]
+for art, g in zip(selected, gaps):
+    art["field_gap_days"] = g
+    art["field_first_time"] = g is None
+
+run_date = tr_date(datetime.now(timezone.utc).astimezone())
 html = render_html(selected, run_date, accession_start=100)
 out = "output/yem-ornek.html"
 open(out, "w", encoding="utf-8").write(html)
 print(f"Ornek yem'li fis yazildi: {out}")
+
+subject, email_html = render_email(selected, run_date)
+out_mail = "output/eposta-ornek.html"
+open(out_mail, "w", encoding="utf-8").write(email_html)
+print(f"Ornek e-posta yazildi:   {out_mail}\nKonu satiri: {subject}")
