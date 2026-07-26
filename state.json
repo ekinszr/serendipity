@@ -1,35 +1,42 @@
 {
   "seen_ids": [
-    "670d5069d767b3c4",
-    "5765b471cf928609",
     "01e913b540eb2685",
-    "2ee1be5f83cf0dcb",
-    "925e6f705b3953a0",
-    "bc96338aa9b76158",
-    "488a31b4dc57ff18",
-    "0455acfd40da1034",
-    "2340cde4a19281a5",
-    "6681bf2bfd3a5be1",
     "9fd01e584398241b",
-    "f81b9948c5d93cd8",
-    "652de97823f4056b",
-    "0c8ac74795abbf51",
-    "d5854e2b9cc84170",
-    "c01416aedf40a626",
-    "0743374f64c3acde",
-    "ed79320af2bdb52e",
+    "8908ecc8faa443dc",
+    "6681bf2bfd3a5be1",
+    "2ee1be5f83cf0dcb",
+    "397fc70a20f21906",
+    "a28e3e24651949c2",
+    "2340cde4a19281a5",
     "5e7ce0cbda8279e7",
+    "bc96338aa9b76158",
+    "2b9c7bccda6abc89",
+    "ca84d57c6b890eca",
+    "610d68738a1c164e",
+    "488a31b4dc57ff18",
+    "d5854e2b9cc84170",
+    "5765b471cf928609",
     "ed768cbb6e3f44d0",
-    "8908ecc8faa443dc"
+    "15f8ea0e6ed781a4",
+    "c01416aedf40a626",
+    "670d5069d767b3c4",
+    "0c8ac74795abbf51",
+    "0743374f64c3acde",
+    "f81b9948c5d93cd8",
+    "ed79320af2bdb52e",
+    "b440880f244ccaa1",
+    "652de97823f4056b",
+    "0455acfd40da1034",
+    "925e6f705b3953a0"
   ],
   "category_last_used": {
-    "Karmasik Sistemler ve Bilim": 1785012392.08358,
-    "Akademik Calismalar (Hakemli)": 1785061593.4483106,
-    "Seckin Kurumlardan Yeni Calismalar": 1785061593.4483106,
-    "Genel Bilim": 1785061593.4483106,
-    "Politika ve Ekonomi (Dusunce Kuruluslari)": 1785061593.4483106,
-    "Tasarim ve Yaratici Dusunce": 1785061593.4483106,
-    "Teknoloji ve Toplum": 1785061593.4483106
+    "Karmasik Sistemler ve Bilim": 1785061900.8695703,
+    "Akademik Calismalar (Hakemli)": 1785061900.8695703,
+    "Seckin Kurumlardan Yeni Calismalar": 1785061900.8695703,
+    "Genel Bilim": 1785061900.8695703,
+    "Politika ve Ekonomi (Dusunce Kuruluslari)": 1785061900.8695703,
+    "Tasarim ve Yaratici Dusunce": 1785061900.8695703,
+    "Teknoloji ve Toplum": 1785061900.8695703
   },
   "history": [
     {
@@ -66,6 +73,18 @@
         "Structures and inhibition of the Crimean–Congo haemorrhagic fever virus polymerase",
         "A reassessment of NMDA receptor–dependent presynaptic homeostatic plasticity",
         "Let Tom Hiddleston be your guide to Pompeii's final day"
+      ]
+    },
+    {
+      "date": "26 Temmuz 2026",
+      "titles": [
+        "How to Keep Life from Becoming a Parody of Itself: Simone de Beauvoir on the Art of Growing Older",
+        "Uninterrupted optical resolution of identical point scatterers undergoing nanometric changes in distance",
+        "MIT student leaders: Q&A with men’s soccer captain Dilin Meloni",
+        "Unlocking HST’s Stellar Treasure Trove: Stellar Activity Minima for HAT-P-11 Offer Prime Windows for Transmission Spectroscopy",
+        "States Need a Roadmap for Credit for Prior Learning",
+        "In painted caves, ancient human DNA clings to the walls",
+        "Why environmental groups are suing over SpaceX’s land swap deal"
       ]
     }
   ]
