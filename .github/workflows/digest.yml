@@ -37,6 +37,9 @@ jobs:
           # ANTHROPIC_API_KEY tanimliysa abstract'lar merak-acici yeme cevrilir;
           # yoksa ham feed ozeti kullanilir (fis yine uretilir).
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          # OpenAlex "polite pool" iletisim adresi (opsiyonel). Kodda
+          # durmasin diye secret'tan gelir; yoksa istekler yine calisir.
+          OPENALEX_MAILTO: ${{ secrets.OPENALEX_MAILTO }}
         run: python digest.py --count 7
 
       - name: Hafizayi ve arsivi commit'le
