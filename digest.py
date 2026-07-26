@@ -81,7 +81,8 @@ def default_state():
     return {
         "seen_ids": [],           # daha once digest'e girmis makale id'leri
         "category_last_used": {}, # kategori -> son kullanilma zamani (epoch)
-        "history": []             # gecmis digest kayitlari (tarih + basliklar)
+        "history": [],            # gecmis digest kayitlari (tarih + basliklar)
+        "feedback": {}            # makale kimligi -> oy (collect_feedback.py yazar)
     }
 
 
@@ -468,25 +469,52 @@ CSS = """
 """
 
 JS = """
-  // Geri bildirim yerelde tutulur (Kademe 2'de sunucuya baglanacak).
+  // Geri bildirim once tarayicida tutulur, sonra TEK TIKLA GitHub issue'suna
+  // gonderilir; haftalik kosu issue'yu okuyup state.json'a isler ve kapatir.
+  // Oylar kayit numarasina degil MAKALE KIMLIGINE (aid) baglanir -- numara her
+  // kosuda degisir, kimlik degismez.
   (function () {
     var KEY = "serendipity-oy";
     var store = {};
     try { store = JSON.parse(localStorage.getItem(KEY) || "{}"); } catch (e) { store = {}; }
 
+    function govde() {
+      var kayitlar = Object.keys(store).map(function (aid) {
+        var o = store[aid];
+        return { aid: aid, oy: o.v, baslik: o.t, alan: o.c, uzaklik: o.d };
+      });
+      return "Bu fisin oylari. Asagidaki blok otomatik okunur, elle duzenleme.\n\n"
+        + "```json\n" + JSON.stringify({ oylar: kayitlar }, null, 2) + "\n```\n";
+    }
+
     function paint() {
       document.querySelectorAll(".vote").forEach(function (b) {
-        b.setAttribute("aria-pressed", String(store[b.dataset.acc] === b.dataset.vote));
+        b.setAttribute("aria-pressed", String(
+          store[b.dataset.aid] && store[b.dataset.aid].v === b.dataset.vote));
       });
       var n = Object.keys(store).length;
       var tally = document.getElementById("tally");
-      if (tally) tally.textContent = n ? n + " kayda not düşüldü" : "Henüz not düşülmedi";
+      var gonder = document.getElementById("gonder");
+      if (tally) tally.textContent = n
+        ? n + " kayda not düşüldü"
+        : "Henüz not düşülmedi";
+      if (gonder) {
+        gonder.hidden = !n;
+        gonder.href = REPO_ISSUE_URL
+          + "?labels=oy&title=" + encodeURIComponent("Keşif Fişi oyları")
+          + "&body=" + encodeURIComponent(govde());
+      }
     }
 
     document.querySelectorAll(".vote").forEach(function (b) {
       b.addEventListener("click", function () {
-        var acc = b.dataset.acc;
-        if (store[acc] === b.dataset.vote) { delete store[acc]; } else { store[acc] = b.dataset.vote; }
+        var aid = b.dataset.aid;
+        if (store[aid] && store[aid].v === b.dataset.vote) {
+          delete store[aid];
+        } else {
+          store[aid] = { v: b.dataset.vote, t: b.dataset.baslik,
+                         c: b.dataset.alan, d: b.dataset.uzaklik };
+        }
         try { localStorage.setItem(KEY, JSON.stringify(store)); } catch (e) {}
         paint();
       });
@@ -619,8 +647,12 @@ def render_html(selected: list, run_date: str, accession_start: int) -> str:
                 <span class="meter" role="img" aria-label="{_esc(explain)}">{meter}</span>
                 <span class="dist-word">{word}</span>
               </span>
-              <button class="vote" type="button" data-acc="{acc}" data-vote="up" aria-pressed="false">&#10022; vay</button>
-              <button class="vote no" type="button" data-acc="{acc}" data-vote="down" aria-pressed="false">&#10005; alakasız</button>
+              <button class="vote" type="button" data-aid="{art.get('id', acc)}" data-vote="up"
+                data-baslik="{_esc(art.get('title', ''))}" data-alan="{_esc(art.get('category', ''))}"
+                data-uzaklik="{word}" aria-pressed="false">&#10022; vay</button>
+              <button class="vote no" type="button" data-aid="{art.get('id', acc)}" data-vote="down"
+                data-baslik="{_esc(art.get('title', ''))}" data-alan="{_esc(art.get('category', ''))}"
+                data-uzaklik="{word}" aria-pressed="false">&#10005; alakasız</button>
               <a class="go" href="{art.get("link", "#")}" target="_blank" rel="noopener">Oku &rarr;</a>
             </div>
           </div>
@@ -639,7 +671,7 @@ def render_html(selected: list, run_date: str, accession_start: int) -> str:
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="{FONTS_HREF}" rel="stylesheet">
-<style>{CSS}</style>
+<style>{CSS}</style>\n<script>var REPO_ISSUE_URL = "{ISSUE_URL}";</script>
 </head>
 <body>
   <div class="wrap">
@@ -660,7 +692,10 @@ def render_html(selected: list, run_date: str, accession_start: int) -> str:
     <footer class="colophon">
       <p>Görülmemiş kaynaklar arasından ağırlıklı-rastgele seçildi. Çentikler uzaklığı
       gösterir: o keşif alanı ne kadar zamandır fişe girmemiş.</p>
-      <p id="tally">Henüz not düşülmedi</p>
+      <p><span id="tally">Henüz not düşülmedi</span>
+      <a id="gonder" hidden href="#" rel="noopener"
+         title="Oyların önceden doldurulmuş bir GitHub issue'suna gider; motor onu okur">
+         &nbsp;·&nbsp;Oyları gönder &rarr;</a></p>
     </footer>
   </div>
 <script>{JS}</script>
@@ -676,6 +711,12 @@ def render_html(selected: list, run_date: str, accession_start: int) -> str:
 # CSS'i kirdigi varsayilir; her sey inline stil.
 
 PAGE_URL = "https://ekinszr.github.io/serendipity/"
+
+# Oylarin dustugu kutu: repo issue'lari. Ayri sunucu/servis gerekmesin diye
+# fisin "Oylari gonder" baglantisi onceden doldurulmus bir issue acar; haftalik
+# kosu (collect_feedback.py) onu okuyup state.json'a isler ve kapatir.
+REPO_SLUG = os.environ.get("GITHUB_REPOSITORY", "ekinszr/serendipity")
+ISSUE_URL = f"https://github.com/{REPO_SLUG}/issues/new"
 
 
 def send_via_resend(subject: str, html: str) -> str:

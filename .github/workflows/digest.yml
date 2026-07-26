@@ -13,6 +13,7 @@ permissions:
   pages: write
   id-token: write
   models: read     # ucretsiz GitHub Models cikarimi (yem katmani)
+  issues: write    # fisten gelen oy issue'larini okuyup kapatmak icin
 
 # Ayni anda tek deploy kossun
 concurrency:
@@ -31,6 +32,13 @@ jobs:
 
       - name: Bagimliliklari kur
         run: pip install feedparser anthropic
+
+      - name: Geri bildirimleri topla
+        # Fisten gelen "oy" etiketli issue'lari state.json'a isler ve kapatir.
+        # Issue yoksa sessizce gecer; fis uretimi buna bagli degil.
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: python collect_feedback.py
 
       - name: Fisi uret
         env:
