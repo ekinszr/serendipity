@@ -305,214 +305,170 @@ def _esc(s: str) -> str:
 
 
 # --------------------------------------------------------------------------
-# Tasarim: "siyanotip arsivi"
-# Prusya mavisi zemin + tebesir beyazi + siyanotip mavisi; tek sicak sinyal
-# rengi (pas) yalnizca "uzak/ilk kez" isaretinde kullanilir.
-# Bodoni Moda (levha basligi) + Spectral (yem metni) + IBM Plex Mono (etiket).
+# Tasarim: kesif-fisi-brand-book.html
+# Palet, tipografi ve kart dili marka kitabindan bire bir alinmistir.
+# Kitapta olmayan tek sey tema varsayilani: kitap yalnizca [data-theme] altinda
+# token tanimliyor, burada :root varsayilani + prefers-color-scheme eklendi ki
+# isletim sistemi tercihi de calissin.
 # --------------------------------------------------------------------------
 
 FONTS_HREF = (
     "https://fonts.googleapis.com/css2"
-    "?family=Bodoni+Moda:opsz,wght@6..96,400;6..96,500;6..96,600"
-    "&family=Spectral:ital,wght@0,300;0,400;0,500;1,400"
-    "&family=IBM+Plex+Mono:wght@400;500;600"
+    "?family=Instrument+Serif:ital@0;1"
+    "&family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600;8..60,700"
+    "&family=JetBrains+Mono:wght@400;500;600"
     "&display=swap"
 )
 
 CSS = """
-  /* --- jetonlar: varsayilan = siyanotip baskisi (koyu) --- */
+  /* --- jetonlar: marka kitabi --- */
   :root {
-    --ground: #071a28;
-    --plate: #0c2436;
-    --chalk: #e4edf2;
-    --body: #c3d4de;
-    --muted: #93aab8;
-    --faint: #7793a6;
-    --cyan: #4e9bd1;
-    --rust: #d4834f;
-    --rule: rgba(138, 163, 180, 0.22);
-    --hairline: rgba(138, 163, 180, 0.12);
-    --glow: rgba(78, 155, 209, 0.14);
+    --paper: #eeefe7;
+    --paper-raised: #f8f8f2;
+    --ink: #1c1e16;
+    --ink-soft: #4b4e3f;
+    --accent: #b23a2a;
+    --accent-2: #4b5e3a;
+    --gold: #7a5e24;
+    --line: rgba(28,30,22,0.14);
+    --line-strong: rgba(28,30,22,0.28);
   }
-  @media (prefers-color-scheme: light) {
+  @media (prefers-color-scheme: dark) {
     :root {
-      --ground: #e9eff2; --plate: #f4f8fa; --chalk: #0b2233; --body: #22414f;
-      --muted: #3f5c6d; --faint: #55707f; --cyan: #1f5c8c; --rust: #9c5227;
-      --rule: rgba(11, 34, 51, 0.18); --hairline: rgba(11, 34, 51, 0.09);
-      --glow: rgba(31, 92, 140, 0.08);
+      --paper: #171a13; --paper-raised: #1f2318; --ink: #ece9dd; --ink-soft: #b7b79e;
+      --accent: #e2694f; --accent-2: #8fae72; --gold: #d2aa5c;
+      --line: rgba(236,233,221,0.14); --line-strong: rgba(236,233,221,0.26);
     }
   }
   :root[data-theme="light"] {
-    --ground: #e9eff2; --plate: #f4f8fa; --chalk: #0b2233; --body: #22414f;
-    --muted: #3f5c6d; --faint: #55707f; --cyan: #1f5c8c; --rust: #9c5227;
-    --rule: rgba(11, 34, 51, 0.18); --hairline: rgba(11, 34, 51, 0.09);
-    --glow: rgba(31, 92, 140, 0.08);
+    --paper: #eeefe7; --paper-raised: #f8f8f2; --ink: #1c1e16; --ink-soft: #4b4e3f;
+    --accent: #b23a2a; --accent-2: #4b5e3a; --gold: #7a5e24;
+    --line: rgba(28,30,22,0.14); --line-strong: rgba(28,30,22,0.28);
   }
   :root[data-theme="dark"] {
-    --ground: #071a28; --plate: #0c2436; --chalk: #e4edf2; --body: #c3d4de;
-    --muted: #93aab8; --faint: #7793a6; --cyan: #4e9bd1; --rust: #d4834f;
-    --rule: rgba(138, 163, 180, 0.22); --hairline: rgba(138, 163, 180, 0.12);
-    --glow: rgba(78, 155, 209, 0.14);
+    --paper: #171a13; --paper-raised: #1f2318; --ink: #ece9dd; --ink-soft: #b7b79e;
+    --accent: #e2694f; --accent-2: #8fae72; --gold: #d2aa5c;
+    --line: rgba(236,233,221,0.14); --line-strong: rgba(236,233,221,0.26);
   }
 
   * { box-sizing: border-box; }
   html { -webkit-text-size-adjust: 100%; }
   body {
     margin: 0;
-    background:
-      radial-gradient(140% 90% at 82% -10%, var(--glow) 0%, transparent 60%),
-      var(--ground);
-    color: var(--body);
-    font-family: Spectral, Georgia, "Times New Roman", serif;
-    font-weight: 400;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: "Source Serif 4", Georgia, serif;
+    font-size: 16px;
+    line-height: 1.6;
     -webkit-font-smoothing: antialiased;
   }
-  a { color: inherit; }
-  :focus-visible { outline: 2px solid var(--cyan); outline-offset: 3px; border-radius: 2px; }
+  a { color: var(--accent); }
+  ::selection { background: var(--accent); color: var(--paper); }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
 
-  .sheet {
-    max-width: 880px;
-    margin: 0 auto;
-    padding: clamp(26px, 5vw, 64px) clamp(18px, 5vw, 44px) 88px;
-  }
+  .wrap { max-width: 920px; margin: 0 auto; padding: 48px 24px 100px; }
 
-  /* --- kunye: katalog karti --- */
-  .plate-head { border-bottom: 1px solid var(--rule); padding-bottom: clamp(20px, 4vw, 32px); }
-  .stamp {
-    font-family: "IBM Plex Mono", ui-monospace, monospace;
-    font-size: 11px; letter-spacing: 0.26em; text-transform: uppercase;
-    color: var(--cyan);
+  /* --- kunye --- */
+  header.masthead { border-bottom: 3px solid var(--ink); padding-bottom: 20px; margin-bottom: 40px; }
+  .kicker {
+    font-family: "JetBrains Mono", monospace; font-size: 11px; letter-spacing: 0.16em;
+    text-transform: uppercase; color: var(--accent); margin: 0 0 10px;
     display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px;
-    padding-bottom: clamp(18px, 4vw, 30px);
   }
-  h1 {
-    font-family: "Bodoni Moda", Didot, "Bodoni MT", Georgia, serif;
-    font-optical-sizing: auto;
-    font-size: clamp(44px, 10vw, 88px);
-    line-height: 1.04; margin: 0; font-weight: 400;
-    color: var(--chalk); letter-spacing: -0.015em;
-    text-wrap: balance;
+  h1.wordmark {
+    font-family: "Instrument Serif", Georgia, serif; font-style: italic;
+    font-size: clamp(48px, 9vw, 84px); line-height: 0.95; margin: 0;
+    letter-spacing: -0.01em; text-wrap: balance;
   }
-  h1 .thin { display: block; font-style: italic; font-weight: 400; color: var(--cyan); }
-  .standfirst {
-    margin: clamp(18px, 3vw, 26px) 0 0;
-    max-width: 54ch; font-size: 17px; line-height: 1.62; color: var(--muted);
+  .dek { max-width: 56ch; color: var(--ink-soft); font-size: 17px; margin: 16px 0 0; }
+  .runbar {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+    gap: 2px 18px; margin-top: 26px;
+    font-family: "JetBrains Mono", monospace; font-variant-numeric: tabular-nums;
   }
-  .fields {
-    display: grid; grid-template-columns: repeat(auto-fit, minmax(112px, 1fr));
-    gap: 2px 18px; margin-top: clamp(22px, 4vw, 34px);
-    font-family: "IBM Plex Mono", ui-monospace, monospace;
-    font-variant-numeric: tabular-nums;
+  .runbar dt {
+    font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--ink-soft); margin-bottom: 4px;
   }
-  .fields dt {
-    font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase;
-    color: var(--faint); margin-bottom: 5px;
-  }
-  .fields dd { margin: 0 0 6px; font-size: 15px; color: var(--chalk); font-weight: 500; }
+  .runbar dd { margin: 0; font-size: 15px; font-weight: 600; }
 
-  /* --- kayitlar --- */
-  .records { display: flex; flex-direction: column; }
+  /* --- kayitlar: marka kitabindaki "live-card" --- */
+  .records { display: flex; flex-direction: column; gap: 20px; }
   .rec {
-    display: grid; grid-template-columns: 92px 1fr;
-    gap: clamp(14px, 3vw, 28px);
-    padding: clamp(28px, 4vw, 40px) 0;
-    border-bottom: 1px solid var(--hairline);
+    background: var(--paper-raised); border: 1px solid var(--line);
+    border-radius: 4px; padding: 26px 28px; position: relative;
   }
-  .rail {
-    display: flex; flex-direction: column; gap: 10px;
-    font-family: "IBM Plex Mono", ui-monospace, monospace;
-    padding-top: 4px;
+  .rec::before {
+    content: ""; position: absolute; left: 0; top: 16px; bottom: 16px;
+    width: 3px; background: var(--accent);
   }
-  /* kategori ikonu: renk tek basina ayirt edici olmasin diye yaninda
-     her zaman alan adi yazisi durur (marka kitabi kurali) */
-  .cat-icon { width: 26px; height: 26px; color: var(--cyan); flex: none; }
-  .rec.far .cat-icon { color: var(--rust); }
-  .acc {
-    font-size: 13px; letter-spacing: 0.08em; color: var(--chalk);
-    font-variant-numeric: tabular-nums; font-weight: 500;
+  .rec-top {
+    display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+    font-family: "JetBrains Mono", monospace; font-size: 11.5px;
+    color: var(--ink-soft); margin-bottom: 14px;
   }
-  .acc span { color: var(--faint); }
-  .meter { display: flex; gap: 3px; }
-  .tick { width: 14px; height: 3px; background: var(--hairline); border-radius: 1px; }
-  .tick.on { background: var(--cyan); }
-  .rec.far .tick.on { background: var(--rust); }
-  .dist {
-    font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--faint);
-  }
-  .rec.far .dist { color: var(--rust); }
-
-  .field-label {
-    font-family: "IBM Plex Mono", ui-monospace, monospace;
-    font-size: 10.5px; letter-spacing: 0.2em; text-transform: uppercase;
-    color: var(--cyan); margin-bottom: 12px;
-  }
+  .cat-icon { width: 20px; height: 20px; color: var(--accent); flex: none; }
+  .rec-cat { text-transform: uppercase; letter-spacing: 0.08em; }
   .rec-title {
-    font-family: "Bodoni Moda", Didot, "Bodoni MT", Georgia, serif;
-    font-optical-sizing: auto;
-    margin: 0 0 14px; font-weight: 400;
-    font-size: clamp(24px, 4.2vw, 34px); line-height: 1.16;
-    letter-spacing: -0.005em; color: var(--chalk); text-wrap: balance;
+    font-family: "Source Serif 4", Georgia, serif; font-weight: 600;
+    font-size: 25px; line-height: 1.28; margin: 0 0 12px; text-wrap: balance;
   }
-  .rec-title a {
-    text-decoration: none;
-    background: linear-gradient(var(--cyan), var(--cyan)) no-repeat;
-    background-size: 0% 1px; background-position: 0 92%;
-    transition: background-size 0.4s cubic-bezier(0.2, 0.7, 0.2, 1), color 0.2s ease;
-  }
-  .rec:hover .rec-title a { background-size: 100% 1px; }
-  .rec-title a:hover { color: var(--cyan); }
-  .hook { margin: 0 0 20px; font-size: 17.5px; line-height: 1.68; max-width: 62ch; }
+  .rec-title a { color: var(--ink); text-decoration: none; border-bottom: 1.5px solid var(--accent); }
+  .rec-title a:hover { color: var(--accent); }
+  .rec-summary { color: var(--ink-soft); font-size: 15.5px; line-height: 1.65; margin: 0 0 18px; max-width: 62ch; }
 
   .rec-foot {
     display: flex; justify-content: space-between; align-items: center;
-    gap: 12px 20px; flex-wrap: wrap;
-    font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 11.5px;
+    gap: 12px 18px; flex-wrap: wrap;
+    border-top: 1px dashed var(--line-strong); padding-top: 12px;
+    font-family: "JetBrains Mono", monospace; font-size: 12px;
   }
-  .src { letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); }
-  .src .lure { color: var(--cyan); margin-left: 6px; }
-  .acts { display: flex; align-items: center; gap: 6px; }
+  .rec-source { color: var(--gold); }
+  .rec-tools { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+
+  /* uzaklik: vurgu rengi baglanti/ikona ayrildigi icin ikincil vurgu kullanir */
+  .dist { display: flex; align-items: center; gap: 7px; color: var(--ink-soft); }
+  .meter { display: flex; gap: 3px; }
+  .tick { width: 12px; height: 3px; background: var(--line-strong); border-radius: 1px; }
+  .tick.on { background: var(--accent-2); }
+  .rec.far .tick.on { background: var(--gold); }
+  .dist-word { letter-spacing: 0.1em; text-transform: uppercase; font-size: 10.5px; }
+  .rec.far .dist-word { color: var(--gold); }
+
   .vote {
-    font: inherit; font-size: 11px; letter-spacing: 0.1em;
-    background: none; border: 1px solid var(--hairline); color: var(--faint);
-    padding: 5px 10px; border-radius: 2px; cursor: pointer;
+    font: inherit; font-size: 11px; letter-spacing: 0.06em;
+    background: none; border: 1px solid var(--line-strong); color: var(--ink-soft);
+    padding: 5px 10px; border-radius: 3px; cursor: pointer;
     transition: color 0.18s ease, border-color 0.18s ease, background 0.18s ease;
   }
-  .vote:hover { color: var(--chalk); border-color: var(--rule); }
-  .vote[aria-pressed="true"] { color: var(--ground); background: var(--cyan); border-color: var(--cyan); }
-  .vote.no[aria-pressed="true"] { background: var(--rust); border-color: var(--rust); }
-  .go {
-    text-decoration: none; color: var(--cyan); font-weight: 500;
-    letter-spacing: 0.08em; white-space: nowrap; margin-left: 8px;
-  }
+  .vote:hover { color: var(--ink); border-color: var(--ink-soft); }
+  .vote[aria-pressed="true"] { background: var(--accent-2); border-color: var(--accent-2); color: var(--paper-raised); }
+  .vote.no[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--paper-raised); }
+  .go { color: var(--accent); font-weight: 600; text-decoration: none; white-space: nowrap; }
   .go:hover { text-decoration: underline; text-underline-offset: 3px; }
 
-  /* --- alt bilgi --- */
-  .colophon {
-    margin-top: clamp(34px, 5vw, 52px);
+  footer.colophon {
+    margin-top: 44px; padding-top: 18px; border-top: 1px solid var(--line);
     display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap;
-    font-family: "IBM Plex Mono", ui-monospace, monospace;
-    font-size: 11px; line-height: 1.7; color: var(--faint);
+    font-family: "JetBrains Mono", monospace; font-size: 11px; line-height: 1.7;
+    color: var(--ink-soft);
   }
-  .colophon p { margin: 0; max-width: 46ch; }
-  .colophon a { color: var(--cyan); }
+  footer.colophon p { margin: 0; max-width: 46ch; }
 
-  @media (max-width: 560px) {
-    .rec { grid-template-columns: 1fr; gap: 12px; }
-    .rail { flex-direction: row; align-items: center; gap: 12px; }
-    .rec-foot { align-items: flex-start; flex-direction: column; }
-    .go { margin-left: 0; }
+  @media (max-width: 620px) {
+    .wrap { padding: 32px 18px 72px; }
+    .rec { padding: 22px 20px; }
+    .rec-foot { flex-direction: column; align-items: flex-start; }
   }
 
-  /* --- hareket: yalnizca yuklenirken tek bir sirali aciliş --- */
   @media (prefers-reduced-motion: no-preference) {
-    .rec { animation: rise 0.5s cubic-bezier(0.2, 0.7, 0.2, 1) both; animation-delay: calc(var(--i) * 60ms); }
-    @keyframes rise { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+    .rec { animation: rise 0.45s cubic-bezier(0.2, 0.7, 0.2, 1) both; animation-delay: calc(var(--i) * 55ms); }
+    @keyframes rise { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
   }
 """
 
 JS = """
   // Geri bildirim yerelde tutulur (Kademe 2'de sunucuya baglanacak).
-  // Amaci konu ogrenmek degil, kalibrasyon: hangi mesafe iyi geldi.
   (function () {
     var KEY = "serendipity-oy";
     var store = {};
@@ -592,8 +548,8 @@ _ICON_RULES = [
 _TR_SADE = str.maketrans("çğıöşüÇĞİÖŞÜ", "cgiosuCGIOSU")
 
 
-# e-postadaki PNG ikonlarin rengi (kagit zemin uzerinde okunan siyanotip mavisi)
-EMAIL_ICON_COLOR = "#1f5c8c"
+# e-postadaki PNG ikonlarin rengi (marka kitabinin vurgu rengi)
+EMAIL_ICON_COLOR = "#b23a2a"
 
 
 def _icon_key(category: str) -> str:
@@ -646,26 +602,26 @@ def render_html(selected: list, run_date: str, accession_start: int) -> str:
         meter = "".join(
             f'<span class="tick{" on" if t < ticks else ""}"></span>' for t in range(3)
         )
-        lure = '<span class="lure" title="merak açıcı yem">&#10022;</span>' if art.get("enriched") else ""
+        lure = ' <span title="merak açıcı yem">&#10022;</span>' if art.get("enriched") else ""
         entries.append(f"""
         <article class="rec{' far' if ticks == 3 else ''}" style="--i:{i}">
-          <div class="rail">
+          <div class="rec-top">
             {_cat_icon(art.get("category", ""))}
-            <div class="acc"><span>No.</span> {acc}</div>
-            <div class="meter" role="img" aria-label="{_esc(explain)}" title="{_esc(explain)}">{meter}</div>
-            <div class="dist">{word}</div>
+            <span>Keşif No. {acc}</span><span>&middot;</span>
+            <span class="rec-cat">{_esc(art.get("category", ""))}</span>
           </div>
-          <div class="rec-body">
-            <div class="field-label">{_esc(art.get("category", ""))}</div>
-            <h2 class="rec-title"><a href="{art.get("link", "#")}" target="_blank" rel="noopener">{_esc(art.get("title", ""))}</a></h2>
-            <p class="hook">{_esc(art.get("summary") or "Özet yok &mdash; kaynağa gidin.")}</p>
-            <div class="rec-foot">
-              <span class="src">{_esc(art.get("source", ""))}{lure}</span>
-              <div class="acts">
-                <button class="vote" type="button" data-acc="{acc}" data-vote="up" aria-pressed="false">&#10022; vay</button>
-                <button class="vote no" type="button" data-acc="{acc}" data-vote="down" aria-pressed="false">&#10005; alakasız</button>
-                <a class="go" href="{art.get("link", "#")}" target="_blank" rel="noopener">Kaynağa git &rarr;</a>
-              </div>
+          <h2 class="rec-title"><a href="{art.get("link", "#")}" target="_blank" rel="noopener">{_esc(art.get("title", ""))}</a></h2>
+          <p class="rec-summary">{_esc(art.get("summary") or "Özet yok &mdash; kaynağa gidin.")}</p>
+          <div class="rec-foot">
+            <span class="rec-source">{_esc(art.get("source", ""))}{lure}</span>
+            <div class="rec-tools">
+              <span class="dist" title="{_esc(explain)}">
+                <span class="meter" role="img" aria-label="{_esc(explain)}">{meter}</span>
+                <span class="dist-word">{word}</span>
+              </span>
+              <button class="vote" type="button" data-acc="{acc}" data-vote="up" aria-pressed="false">&#10022; vay</button>
+              <button class="vote no" type="button" data-acc="{acc}" data-vote="down" aria-pressed="false">&#10005; alakasız</button>
+              <a class="go" href="{art.get("link", "#")}" target="_blank" rel="noopener">Oku &rarr;</a>
             </div>
           </div>
         </article>""")
@@ -686,13 +642,13 @@ def render_html(selected: list, run_date: str, accession_start: int) -> str:
 <style>{CSS}</style>
 </head>
 <body>
-  <main class="sheet">
-    <header class="plate-head">
-      <div class="stamp"><span>Serendipity &middot; Keşif Fişi</span><span>Levha {issue}</span></div>
-      <h1>Keşif<span class="thin">Fişi</span></h1>
-      <p class="standfirst">Seçkin kurumlardan, hakemli dergilerden ve fikir yazılarından &mdash;
+  <div class="wrap">
+    <header class="masthead">
+      <p class="kicker"><span>Serendipity &middot; Haftalık Keşif</span><span>Sayı {issue}</span></p>
+      <h1 class="wordmark">Keşif Fişi</h1>
+      <p class="dek">Seçkin kurumlardan, hakemli dergilerden ve fikir yazılarından &mdash;
       kontrollü rastgelelikle seçilmiş, ilgili ama beklenmedik okumalar.</p>
-      <dl class="fields">
+      <dl class="runbar">
         <div><dt>Tarih</dt><dd>{run_date}</dd></div>
         <div><dt>Kayıt</dt><dd>{len(selected)}</dd></div>
         <div><dt>Alan</dt><dd>{len(fields)}</dd></div>
@@ -702,11 +658,11 @@ def render_html(selected: list, run_date: str, accession_start: int) -> str:
     <div class="records">{entries_html}
     </div>
     <footer class="colophon">
-      <p>Görülmemiş kaynaklar arasından ağırlıklı-rastgele seçildi. Soldaki çentikler
-      uzaklığı gösterir: o keşif alanı ne kadar zamandır fişe girmemiş.</p>
+      <p>Görülmemiş kaynaklar arasından ağırlıklı-rastgele seçildi. Çentikler uzaklığı
+      gösterir: o keşif alanı ne kadar zamandır fişe girmemiş.</p>
       <p id="tally">Henüz not düşülmedi</p>
     </footer>
-  </main>
+  </div>
 <script>{JS}</script>
 </body>
 </html>"""
@@ -791,10 +747,10 @@ def render_email(selected: list, run_date: str, page_url: str = PAGE_URL) -> tup
         # yerinde duruyor, o yuzden ikon dekoratif (alt="").
         icon_url = f"{page_url.rstrip('/')}/icons/{_icon_key(a.get('category',''))}.png"
         rows.append(f"""
-              <tr><td style="padding:0 0 18px;border-bottom:1px solid #d3dee4;">
-                <div style="font:11px/1.4 Menlo,Consolas,monospace;letter-spacing:.16em;text-transform:uppercase;color:#1f5c8c;padding-bottom:6px;"><img src="{icon_url}" width="18" height="18" alt="" style="vertical-align:-4px;margin-right:7px;border:0;">{_esc(a.get("category",""))}</div>
-                <a href="{a.get("link","#")}" style="font:400 20px/1.3 Georgia,'Times New Roman',serif;color:#0b2233;text-decoration:none;">{_esc(a.get("title",""))}</a>
-                <div style="font:11px/1.4 Menlo,Consolas,monospace;letter-spacing:.12em;text-transform:uppercase;color:#6d8798;padding-top:7px;">{_esc(a.get("source",""))}</div>
+              <tr><td style="padding:0 0 18px;border-bottom:1px solid #dcdcd2;">
+                <div style="font:11px/1.4 Menlo,Consolas,monospace;letter-spacing:.14em;text-transform:uppercase;color:#b23a2a;padding-bottom:6px;"><img src="{icon_url}" width="18" height="18" alt="" style="vertical-align:-4px;margin-right:7px;border:0;">{_esc(a.get("category",""))}</div>
+                <a href="{a.get("link","#")}" style="font:400 20px/1.3 Georgia,'Times New Roman',serif;color:#1c1e16;text-decoration:none;">{_esc(a.get("title",""))}</a>
+                <div style="font:11px/1.4 Menlo,Consolas,monospace;letter-spacing:.12em;text-transform:uppercase;color:#7a5e24;padding-top:7px;">{_esc(a.get("source",""))}</div>
               </td></tr>
               <tr><td style="height:18px;line-height:18px;">&nbsp;</td></tr>""")
 
@@ -802,38 +758,38 @@ def render_email(selected: list, run_date: str, page_url: str = PAGE_URL) -> tup
 <html lang="tr">
 <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>{_esc(subject)}</title></head>
-<body style="margin:0;padding:0;background:#e9eff2;">
+<body style="margin:0;padding:0;background:#eeefe7;">
   <div style="display:none;max-height:0;overflow:hidden;opacity:0;">{_esc(appetizer)}</div>
-  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#e9eff2;">
-    <tr><td align="center" style="padding:28px 16px 48px;">
-      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:520px;background:#f6f9fb;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#eeefe7;">
+    <tr><td align="center" style="padding:30px 16px 52px;">
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:540px;background:#f8f8f2;border:1px solid #dcdcd2;">
 
-        <tr><td style="background:#071a28;padding:26px 28px;">
-          <div style="font:11px/1.4 Menlo,Consolas,monospace;letter-spacing:.26em;text-transform:uppercase;color:#4e9bd1;">Serendipity · Keşif Fişi</div>
-          <div style="font:400 34px/1.1 Georgia,'Times New Roman',serif;color:#e4edf2;padding-top:10px;">Bu haftanın fişi hazır</div>
-          <div style="font:italic 15px/1.5 Georgia,serif;color:#8aa3b4;padding-top:10px;">{_esc(appetizer)}</div>
+        <tr><td style="padding:30px 30px 20px;border-bottom:3px solid #1c1e16;">
+          <div style="font:11px/1.4 Menlo,Consolas,monospace;letter-spacing:.16em;text-transform:uppercase;color:#b23a2a;padding-bottom:10px;">Serendipity &middot; Haftalık Keşif</div>
+          <div style="font:italic 44px/0.95 Georgia,'Times New Roman',serif;color:#1c1e16;">Keşif Fişi</div>
+          <div style="font:15px/1.5 Georgia,serif;color:#4b4e3f;padding-top:14px;">{_esc(appetizer)}</div>
         </td></tr>
 
-        <tr><td style="padding:28px 28px 6px;">
+        <tr><td style="padding:26px 30px 6px;">
           <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
             {"".join(rows)}
           </table>
         </td></tr>
 
-        <tr><td align="center" style="padding:10px 28px 34px;">
+        <tr><td align="center" style="padding:8px 30px 32px;">
           <table role="presentation" cellpadding="0" cellspacing="0" border="0"><tr>
-            <td align="center" bgcolor="#1f5c8c" style="border-radius:2px;">
-              <a href="{page_url}" style="display:inline-block;padding:15px 34px;font:600 13px/1 Menlo,Consolas,monospace;letter-spacing:.18em;text-transform:uppercase;color:#f6f9fb;text-decoration:none;">Fişi aç &rarr;</a>
+            <td align="center" bgcolor="#b23a2a" style="border-radius:3px;">
+              <a href="{page_url}" style="display:inline-block;padding:15px 34px;font:600 13px/1 Menlo,Consolas,monospace;letter-spacing:.16em;text-transform:uppercase;color:#f8f8f2;text-decoration:none;">Fişi aç &rarr;</a>
             </td>
           </tr></table>
-          <div style="font:12px/1.6 Menlo,Consolas,monospace;color:#7d97a6;padding-top:16px;">
+          <div style="font:12px/1.6 Menlo,Consolas,monospace;color:#4b4e3f;padding-top:16px;">
             Yem özetler ve uzaklık çentikleri fişte.
           </div>
         </td></tr>
 
-        <tr><td style="padding:0 28px 26px;border-top:1px solid #d3dee4;">
-          <div style="font:11px/1.7 Menlo,Consolas,monospace;color:#7d97a6;padding-top:16px;">
-            {run_date} · {len(selected)} kayıt · {len(fields)} alan · görülmemiş kaynaklardan ağırlıklı-rastgele seçildi.
+        <tr><td style="padding:0 30px 26px;border-top:1px solid #dcdcd2;">
+          <div style="font:11px/1.7 Menlo,Consolas,monospace;color:#4b4e3f;padding-top:16px;">
+            {run_date} &middot; {len(selected)} kayıt &middot; {len(fields)} alan &middot; görülmemiş kaynaklardan ağırlıklı-rastgele seçildi.
           </div>
         </td></tr>
 
