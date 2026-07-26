@@ -28,14 +28,27 @@ GH_MODELS_URL = "https://models.github.ai/inference/chat/completions"
 GH_MODEL = os.environ.get("GITHUB_MODELS_MODEL", "openai/gpt-4.1-mini")
 USER_AGENT = "SerendipityDigest/1.0 (personal reading tool)"
 
+# Uzunluk hedefi tek yerden yonetilsin (istem + denetim ayni sayiyi kullansin).
+MIN_KELIME, HEDEF_KELIME, MAX_KELIME = 40, 50, 60
+
 SYSTEM = (
     "Sen bir kesif dergisinin editorusun. Gorevin: akademik makale ya da haber "
-    "ozetlerini, okuyucuda MERAK uyandiran kisa bir Turkce 'yem'e cevirmek. "
-    "Kurallar: (1) Ozet DEGIL merak acici yaz -- 'ne hakkinda + neden carpici' "
-    "sezdir, cevabi kaynakta birak. (2) 40-60 kelime, en fazla 3 cumle. "
-    "(3) Sadece verilen bilgiye sadik kal, ASLA uydurma; bilgi yetersizse "
-    "elindekiyle yetin. (4) Akademik jargon yerine sade, davetkar dil kullan. "
-    "(5) Turkce yaz. Ciktida sadece istenen JSON'u ver."
+    "ozetlerini, okuyucuda MERAK uyandiran bir Turkce 'yem'e cevirmek.\n"
+    "UZUNLUK EN ONEMLI KURAL: her yem EN AZ 40, en fazla 60 kelime olmali; "
+    "hedef 50 kelime. Bu genelde 3-4 cumle eder. 40 kelimenin altina DUSME -- "
+    "kisa yem gorevin basarisiz sayilir. Yazdiktan sonra kelimeleri say, "
+    "40'in altindaysa bir cumle daha ekleyerek genislet.\n"
+    "Digerleri: (1) Ozet DEGIL merak acici yaz -- 'ne hakkinda + neden carpici' "
+    "sezdir, cevabi kaynakta birak; sonu acik bir soruyla bitebilir. "
+    "(2) Sadece verilen bilgiye sadik kal, ASLA uydurma; bilgi yetersizse "
+    "elindekiyle yetin ama yine de 40 kelimeyi doldur (baglami ve neden "
+    "onemli oldugunu acarak). (3) Akademik jargon yerine sade, davetkar dil. "
+    "(4) Turkce yaz. Ciktida sadece istenen JSON'u ver.\n"
+    "Istenen uzunluga ornek (52 kelime): \"Bir molekulun icinde kimyasal baglar "
+    "femtosaniyeler icinde yeniden dizilir - gozle gorulemeyecek kadar hizli. "
+    "Princeton ekibi bu yeniden dizilisi ilk kez anlik bir film gibi yakaladi. "
+    "Peki bir baga sira gelmesi ne anlama gelir, ve bu neden gunes "
+    "hucrelerinden gorus teknolojilerine kadar her seyi degistirebilir?\""
 )
 
 SCHEMA = {
@@ -106,6 +119,10 @@ def _call_github_models(system: str, user_msg: str) -> str:
     return data["choices"][0]["message"]["content"]
 
 
+def _kelime(metin: str) -> int:
+    return len((metin or "").split())
+
+
 def _parse_hooks(text: str) -> dict:
     """Model cevabini JSON'a cevirir; kod cit isaretlerini toleransla temizler."""
     t = (text or "").strip()
@@ -150,9 +167,10 @@ def enrich_hooks(selected: list) -> None:
     ]
     user_msg = (
         "Asagida bu haftanin kesif fisi icin secilmis maddeler var (JSON). "
-        "Her biri icin 'index'i ayni kalacak sekilde 40-60 kelimelik bir Turkce "
-        "yem uret. Ozeti olmayan ya da cok kisa olan maddelerde basligindan "
-        "yola cikarak merak acici bir giris yaz.\n\n"
+        f"Her biri icin 'index'i ayni kalacak sekilde {MIN_KELIME}-{MAX_KELIME} "
+        f"kelimelik (hedef {HEDEF_KELIME}) bir Turkce yem uret. Ozeti olmayan ya "
+        "da cok kisa olan maddelerde basligindan yola cikarak merak acici bir "
+        f"giris yaz -- kaynak yetersiz olsa bile {MIN_KELIME} kelimeyi doldur.\n\n"
         + json.dumps(items, ensure_ascii=False, indent=2)
     )
 
@@ -171,13 +189,47 @@ def enrich_hooks(selected: list) -> None:
         print("  [yem atlandi] hicbir saglayici calismadi; ham ozet kullanilacak.")
         return
 
-    count = 0
-    for h in data.get("hooks", []):
-        i = h.get("index")
-        hook = (h.get("hook") or "").strip()
-        if isinstance(i, int) and 0 <= i < len(selected) and hook:
-            selected[i]["summary"] = hook
-            selected[i]["enriched"] = True
-            count += 1
+    def _uygula(d: dict) -> int:
+        n = 0
+        for h in d.get("hooks", []):
+            i = h.get("index")
+            hook = (h.get("hook") or "").strip()
+            if isinstance(i, int) and 0 <= i < len(selected) and hook:
+                selected[i]["summary"] = hook
+                selected[i]["enriched"] = True
+                n += 1
+        return n
+
+    count = _uygula(data)
+
+    # Uzunluk denetimi + TEK onarim turu. Modeller uzunluk hedefini genelde
+    # asagi dogru kaciriyor; kisa kalanlari toplu halde genislettiriyoruz.
+    kisa = [i for i, a in enumerate(selected)
+            if a.get("enriched") and _kelime(a.get("summary")) < MIN_KELIME]
+    if kisa:
+        provider, model_adi = used
+        onar_msg = (
+            f"Asagidaki yemler {MIN_KELIME} kelimenin altinda kaldi. Her birini "
+            f"{MIN_KELIME}-{MAX_KELIME} kelimeye (hedef {HEDEF_KELIME}) GENISLET: "
+            "ayni bilgiye sadik kal, uydurma ekleme; baglami ac, neden onemli "
+            "oldugunu sezdir, sonu acik bir soruyla baglayabilirsin. 'index' "
+            "degerlerini aynen koru.\n\n"
+            + json.dumps(
+                [{"index": i, "baslik": selected[i].get("title", ""),
+                  "ozet": (selected[i].get("summary") or ""),
+                  "kaynak_ozet": ""} for i in kisa],
+                ensure_ascii=False, indent=2)
+        )
+        try:
+            text2 = (_call_anthropic(SYSTEM, onar_msg) if provider == "anthropic"
+                     else _call_github_models(SYSTEM, onar_msg))
+            _uygula(_parse_hooks(text2))
+            print(f"  [yem] {len(kisa)} kisa yem genisletildi (onarim turu).")
+        except Exception as e:
+            print(f"  [yem] onarim turu basarisiz ({e}); kisa yemler korundu.")
+
+    uzunluklar = [_kelime(a.get("summary")) for a in selected if a.get("enriched")]
+    ort = round(sum(uzunluklar) / len(uzunluklar)) if uzunluklar else 0
     print(f"  [yem] {count}/{len(selected)} madde merak-acici yeme cevrildi "
-          f"({used[0]}: {used[1]}).")
+          f"({used[0]}: {used[1]}); ortalama {ort} kelime "
+          f"(hedef {MIN_KELIME}-{MAX_KELIME}).")
