@@ -722,6 +722,43 @@ def render_html(selected: list, run_date: str, accession_start: int) -> str:
 PAGE_URL = "https://ekinszr.github.io/serendipity/"
 
 
+def send_via_resend(subject: str, html: str) -> str:
+    """Fis haberini e-postayla yollar. Anahtar/alici yoksa sessizce atlanir --
+    e-posta bir ek, fisin uretilmesi ona bagli degil.
+
+    Ortam degiskenleri (Actions'ta secret):
+      RESEND_API_KEY  -> resend.com hesabindan alinan anahtar
+      EMAIL_TO        -> alici adres (repoda durmasin diye burada degil)
+      EMAIL_FROM      -> gonderici; varsayilan Resend'in test adresi
+    """
+    api_key = os.environ.get("RESEND_API_KEY", "").strip()
+    to = os.environ.get("EMAIL_TO", "").strip()
+    if not api_key or not to:
+        return "e-posta atlandi (RESEND_API_KEY veya EMAIL_TO yok)"
+
+    sender = os.environ.get("EMAIL_FROM", "").strip() or \
+        "Kesif Fisi <onboarding@resend.dev>"
+    payload = json.dumps({
+        "from": sender, "to": [to], "subject": subject, "html": html,
+    }).encode("utf-8")
+    req = urllib.request.Request(
+        "https://api.resend.com/emails", data=payload, method="POST",
+        headers={"Authorization": f"Bearer {api_key}",
+                 "Content-Type": "application/json"})
+    try:
+        resp = json.loads(urllib.request.urlopen(req, timeout=20).read())
+        return f"e-posta gonderildi -> {to} (id {resp.get('id', '?')})"
+    except Exception as e:
+        detail = ""
+        body = getattr(e, "file", None)
+        if body is not None:
+            try:
+                detail = f" — {body.read().decode('utf-8', 'replace')[:200]}"
+            except Exception:
+                pass
+        return f"e-posta GONDERILEMEDI: {e}{detail}"
+
+
 def render_email(selected: list, run_date: str, page_url: str = PAGE_URL) -> tuple:
     """(konu, html) doner. Konu her hafta degisir ki gelen kutusunda korlesmesin."""
     fields = []
@@ -814,6 +851,7 @@ def main():
     parser.add_argument("--category", type=str, default=None, help="Sadece belirli bir kategoriden tara")
     parser.add_argument("--reset", action="store_true", help="Gorulmus makale hafizasini sifirla")
     parser.add_argument("--no-llm", action="store_true", help="LLM yem katmanini atla (sadece ham feed ozeti)")
+    parser.add_argument("--no-email", action="store_true", help="Haberci e-postayi gonderme")
     args = parser.parse_args()
 
     feeds_config = load_json(FEEDS_PATH, {})
@@ -862,6 +900,13 @@ def main():
     # GitHub Pages'in kok adresi hep EN GUNCEL fisi gostersin diye
     # ayni cikti index.html olarak da yazilir ("Fisi Ac" butonu sabit adrese gider).
     (OUTPUT_DIR / "index.html").write_text(html, encoding="utf-8")
+
+    # Haberci e-posta: fis yayinlandiktan sonra "geldi" demek icin.
+    # Anahtar yoksa sessizce atlanir, fis yine yerinde durur.
+    subject, email_html = render_email(selected, run_date)
+    (OUTPUT_DIR / "eposta-son.html").write_text(email_html, encoding="utf-8")
+    if not args.no_email:
+        print(f"\n{send_via_resend(subject, email_html)}")
 
     print(f"\n{len(selected)} madde secildi:")
     for a in selected:

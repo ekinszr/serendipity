@@ -40,6 +40,11 @@ jobs:
           # OpenAlex "polite pool" iletisim adresi (opsiyonel). Kodda
           # durmasin diye secret'tan gelir; yoksa istekler yine calisir.
           OPENALEX_MAILTO: ${{ secrets.OPENALEX_MAILTO }}
+          # Haberci e-posta (opsiyonel). Ucu de tanimliysa fis yayinlandiktan
+          # sonra kisa bir "geldi" postasi gider; yoksa adim sessizce atlanir.
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+          EMAIL_TO: ${{ secrets.EMAIL_TO }}
+          EMAIL_FROM: ${{ secrets.EMAIL_FROM }}
         run: python digest.py --count 7
 
       - name: Hafizayi ve arsivi commit'le
