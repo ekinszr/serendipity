@@ -1,42 +1,49 @@
 {
   "seen_ids": [
-    "01e913b540eb2685",
-    "9fd01e584398241b",
-    "8908ecc8faa443dc",
-    "6681bf2bfd3a5be1",
-    "2ee1be5f83cf0dcb",
-    "397fc70a20f21906",
-    "a28e3e24651949c2",
-    "2340cde4a19281a5",
-    "5e7ce0cbda8279e7",
     "bc96338aa9b76158",
-    "2b9c7bccda6abc89",
-    "ca84d57c6b890eca",
-    "610d68738a1c164e",
-    "488a31b4dc57ff18",
-    "d5854e2b9cc84170",
     "5765b471cf928609",
-    "ed768cbb6e3f44d0",
+    "01e913b540eb2685",
+    "2392a80e8574a5f8",
+    "8908ecc8faa443dc",
+    "0455acfd40da1034",
     "15f8ea0e6ed781a4",
-    "c01416aedf40a626",
-    "670d5069d767b3c4",
+    "397fc70a20f21906",
     "0c8ac74795abbf51",
     "0743374f64c3acde",
+    "2340cde4a19281a5",
+    "6681bf2bfd3a5be1",
+    "925e6f705b3953a0",
+    "488a31b4dc57ff18",
+    "a28e3e24651949c2",
+    "652de97823f4056b",
+    "6611dbb83cf9ba75",
+    "2aa0fc0f3ae619a1",
     "f81b9948c5d93cd8",
+    "9fd01e584398241b",
+    "03d28c25aef3ce60",
+    "ebd3e99bfbd27319",
+    "ca84d57c6b890eca",
+    "87a03020e56b8602",
+    "2ee1be5f83cf0dcb",
+    "750cc1535542e74f",
+    "d5854e2b9cc84170",
+    "2b9c7bccda6abc89",
+    "c01416aedf40a626",
+    "ed768cbb6e3f44d0",
+    "670d5069d767b3c4",
     "ed79320af2bdb52e",
     "b440880f244ccaa1",
-    "652de97823f4056b",
-    "0455acfd40da1034",
-    "925e6f705b3953a0"
+    "610d68738a1c164e",
+    "5e7ce0cbda8279e7"
   ],
   "category_last_used": {
-    "Karmasik Sistemler ve Bilim": 1785061900.8695703,
-    "Akademik Calismalar (Hakemli)": 1785061900.8695703,
+    "Karmasik Sistemler ve Bilim": 1785061977.1645246,
+    "Akademik Calismalar (Hakemli)": 1785061977.1645246,
     "Seckin Kurumlardan Yeni Calismalar": 1785061900.8695703,
-    "Genel Bilim": 1785061900.8695703,
+    "Genel Bilim": 1785061977.1645246,
     "Politika ve Ekonomi (Dusunce Kuruluslari)": 1785061900.8695703,
     "Tasarim ve Yaratici Dusunce": 1785061900.8695703,
-    "Teknoloji ve Toplum": 1785061900.8695703
+    "Teknoloji ve Toplum": 1785061977.1645246
   },
   "history": [
     {
@@ -85,6 +92,18 @@
         "States Need a Roadmap for Credit for Prior Learning",
         "In painted caves, ancient human DNA clings to the walls",
         "Why environmental groups are suing over SpaceX’s land swap deal"
+      ]
+    },
+    {
+      "date": "26 Temmuz 2026",
+      "titles": [
+        "Evolutionary innovation through fusion of sequences from across the tree of life",
+        "The math of traffic jams and how to avoid them",
+        "What kinds of black holes exist — and how are they different?",
+        "Ketogenic diets may increase cancer risk in the small intestine",
+        "Why new Houthi threats in the Red Sea could spell trouble for global oil prices and inflation",
+        "The Amazing Photos from NASA’s First-Ever Mars Lander",
+        "BRCA1-RAD51 homologous DNA repair pathway promotes HIV-1 reverse transcription"
       ]
     }
   ]
