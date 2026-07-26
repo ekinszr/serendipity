@@ -12,6 +12,7 @@ permissions:
   contents: write
   pages: write
   id-token: write
+  models: read     # ucretsiz GitHub Models cikarimi (yem katmani)
 
 # Ayni anda tek deploy kossun
 concurrency:
@@ -42,6 +43,9 @@ jobs:
           OPENALEX_MAILTO: ${{ secrets.OPENALEX_MAILTO }}
           # Haberci e-posta (opsiyonel). Ucu de tanimliysa fis yayinlandiktan
           # sonra kisa bir "geldi" postasi gider; yoksa adim sessizce atlanir.
+          # Yem katmani icin UCRETSIZ geri dusus: ANTHROPIC_API_KEY yoksa
+          # GitHub Models kullanilir (ayri anahtar/kredi gerekmez).
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
           EMAIL_TO: ${{ secrets.EMAIL_TO }}
           EMAIL_FROM: ${{ secrets.EMAIL_FROM }}
