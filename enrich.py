@@ -29,7 +29,10 @@ GH_MODEL = os.environ.get("GITHUB_MODELS_MODEL", "openai/gpt-4.1-mini")
 USER_AGENT = "SerendipityDigest/1.0 (personal reading tool)"
 
 # Uzunluk hedefi tek yerden yonetilsin (istem + denetim ayni sayiyi kullansin).
-MIN_KELIME, HEDEF_KELIME, MAX_KELIME = 40, 50, 60
+# Modeller uzunluk hedefini tutarli sekilde ASAGI kaciriyor, o yuzden istemde
+# soylenen hedef (HEDEF) araligin ustune yanlilanir; denetim gercek sinirla
+# (MIN/MAX) yapilir.
+MIN_KELIME, HEDEF_KELIME, MAX_KELIME = 40, 55, 60
 
 SYSTEM = (
     "Sen bir kesif dergisinin editorusun. Gorevin: akademik makale ya da haber "
@@ -204,29 +207,36 @@ def enrich_hooks(selected: list) -> None:
 
     # Uzunluk denetimi + TEK onarim turu. Modeller uzunluk hedefini genelde
     # asagi dogru kaciriyor; kisa kalanlari toplu halde genislettiriyoruz.
-    kisa = [i for i, a in enumerate(selected)
-            if a.get("enriched") and _kelime(a.get("summary")) < MIN_KELIME]
-    if kisa:
-        provider, model_adi = used
+    provider, model_adi = used
+    for tur in (1, 2):
+        kisa = [i for i, a in enumerate(selected)
+                if a.get("enriched") and _kelime(a.get("summary")) < MIN_KELIME]
+        if not kisa:
+            break
         onar_msg = (
-            f"Asagidaki yemler {MIN_KELIME} kelimenin altinda kaldi. Her birini "
-            f"{MIN_KELIME}-{MAX_KELIME} kelimeye (hedef {HEDEF_KELIME}) GENISLET: "
+            f"Asagidaki yemler {MIN_KELIME} kelimenin altinda kaldi; her maddede "
+            "'su_an' kac kelime oldugunu, 'eklenecek' kac kelime daha gerektigini "
+            f"yaziyorum. Her birini {MIN_KELIME}-{MAX_KELIME} kelimeye "
+            f"(hedef {HEDEF_KELIME}) GENISLET: "
             "ayni bilgiye sadik kal, uydurma ekleme; baglami ac, neden onemli "
             "oldugunu sezdir, sonu acik bir soruyla baglayabilirsin. 'index' "
             "degerlerini aynen koru.\n\n"
             + json.dumps(
                 [{"index": i, "baslik": selected[i].get("title", ""),
-                  "ozet": (selected[i].get("summary") or ""),
-                  "kaynak_ozet": ""} for i in kisa],
+                  "mevcut_yem": (selected[i].get("summary") or ""),
+                  "su_an": _kelime(selected[i].get("summary")),
+                  "eklenecek": max(0, HEDEF_KELIME - _kelime(selected[i].get("summary"))),
+                  } for i in kisa],
                 ensure_ascii=False, indent=2)
         )
         try:
             text2 = (_call_anthropic(SYSTEM, onar_msg) if provider == "anthropic"
                      else _call_github_models(SYSTEM, onar_msg))
             _uygula(_parse_hooks(text2))
-            print(f"  [yem] {len(kisa)} kisa yem genisletildi (onarim turu).")
+            print(f"  [yem] {len(kisa)} kisa yem genisletildi (onarim turu {tur}).")
         except Exception as e:
-            print(f"  [yem] onarim turu basarisiz ({e}); kisa yemler korundu.")
+            print(f"  [yem] onarim turu {tur} basarisiz ({e}); kisa yemler korundu.")
+            break
 
     uzunluklar = [_kelime(a.get("summary")) for a in selected if a.get("enriched")]
     ort = round(sum(uzunluklar) / len(uzunluklar)) if uzunluklar else 0
