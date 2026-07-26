@@ -744,7 +744,11 @@ def send_via_resend(subject: str, html: str) -> str:
     req = urllib.request.Request(
         "https://api.resend.com/emails", data=payload, method="POST",
         headers={"Authorization": f"Bearer {api_key}",
-                 "Content-Type": "application/json"})
+                 "Content-Type": "application/json",
+                 # Cloudflare, Python-urllib'in varsayilan imzasini 403/1010
+                 # ile eliyor; istegi normal bir istemci gibi tanit.
+                 "User-Agent": USER_AGENT,
+                 "Accept": "application/json"})
     try:
         resp = json.loads(urllib.request.urlopen(req, timeout=20).read())
         return f"e-posta gonderildi -> {to} (id {resp.get('id', '?')})"
