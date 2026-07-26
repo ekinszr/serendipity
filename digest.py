@@ -586,14 +586,22 @@ _ICON_RULES = [
 _TR_SADE = str.maketrans("çğıöşüÇĞİÖŞÜ", "cgiosuCGIOSU")
 
 
-def _cat_icon(category: str) -> str:
-    """Kategoriye karsilik gelen cizgi ikon. Eslesme yoksa notr bir isaret."""
+# e-postadaki PNG ikonlarin rengi (kagit zemin uzerinde okunan siyanotip mavisi)
+EMAIL_ICON_COLOR = "#1f5c8c"
+
+
+def _icon_key(category: str) -> str:
+    """Kategori adindan ikon anahtari. Eslesme yoksa notr bir isaret."""
     key = (category or "").translate(_TR_SADE).lower()
-    body = _ICON_BODY["yorunge"]
     for needle, icon in _ICON_RULES:
         if needle in key:
-            body = _ICON_BODY[icon]
-            break
+            return icon
+    return "yorunge"
+
+
+def _cat_icon(category: str) -> str:
+    """Fis icin satir ici SVG ikon (tema rengini currentColor ile alir)."""
+    body = _ICON_BODY[_icon_key(category)]
     return (f'<svg class="cat-icon" viewBox="0 0 32 32" fill="none" stroke="currentColor" '
             f'stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" '
             f'aria-hidden="true" focusable="false">{body}</svg>')
@@ -731,9 +739,13 @@ def render_email(selected: list, run_date: str, page_url: str = PAGE_URL) -> tup
 
     rows = []
     for a in selected:
+        # ikon PNG olarak, mutlak adresten: istemciler satir ici SVG'yi de
+        # data: URI'yi de atar. Gorseller engellenirse alan adi yazisi zaten
+        # yerinde duruyor, o yuzden ikon dekoratif (alt="").
+        icon_url = f"{page_url.rstrip('/')}/icons/{_icon_key(a.get('category',''))}.png"
         rows.append(f"""
               <tr><td style="padding:0 0 18px;border-bottom:1px solid #d3dee4;">
-                <div style="font:11px/1.4 Menlo,Consolas,monospace;letter-spacing:.16em;text-transform:uppercase;color:#1f5c8c;padding-bottom:6px;">{_esc(a.get("category",""))}</div>
+                <div style="font:11px/1.4 Menlo,Consolas,monospace;letter-spacing:.16em;text-transform:uppercase;color:#1f5c8c;padding-bottom:6px;"><img src="{icon_url}" width="18" height="18" alt="" style="vertical-align:-4px;margin-right:7px;border:0;">{_esc(a.get("category",""))}</div>
                 <a href="{a.get("link","#")}" style="font:400 20px/1.3 Georgia,'Times New Roman',serif;color:#0b2233;text-decoration:none;">{_esc(a.get("title",""))}</a>
                 <div style="font:11px/1.4 Menlo,Consolas,monospace;letter-spacing:.12em;text-transform:uppercase;color:#6d8798;padding-top:7px;">{_esc(a.get("source",""))}</div>
               </td></tr>
