@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Keşif Fişi &middot; 26 Temmuz 2026</title>
+<title>Keşif Fişi &middot; 27 Temmuz 2026</title>
 <meta name="description" content="Haftalık keşif fişi: güvenilir kaynaklardan ilgili ama beklenmedik okumalar.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -164,7 +164,7 @@
       <p class="dek">Seçkin kurumlardan, hakemli dergilerden ve fikir yazılarından &mdash;
       kontrollü rastgelelikle seçilmiş, ilgili ama beklenmedik okumalar.</p>
       <dl class="runbar">
-        <div><dt>Tarih</dt><dd>26 Temmuz 2026</dd></div>
+        <div><dt>Tarih</dt><dd>27 Temmuz 2026</dd></div>
         <div><dt>Kayıt</dt><dd>7</dd></div>
         <div><dt>Alan</dt><dd>5</dd></div>
         <div><dt>Uzak</dt><dd>3</dd></div>
@@ -377,13 +377,8 @@
         var o = store[aid];
         return { aid: aid, oy: o.v, baslik: o.t, alan: o.c, uzaklik: o.d };
       });
-      return "Bu fisin oylari. Asagidaki blok otomatik okunur, elle duzenleme.
-
-"
-        + "```json
-" + JSON.stringify({ oylar: kayitlar }, null, 2) + "
-```
-";
+      return "Bu fisin oylari. Asagidaki blok otomatik okunur, elle duzenleme.\n\n"
+        + "```json\n" + JSON.stringify({ oylar: kayitlar }, null, 2) + "\n```\n";
     }
 
     function paint() {

@@ -483,8 +483,8 @@ JS = """
         var o = store[aid];
         return { aid: aid, oy: o.v, baslik: o.t, alan: o.c, uzaklik: o.d };
       });
-      return "Bu fisin oylari. Asagidaki blok otomatik okunur, elle duzenleme.\n\n"
-        + "```json\n" + JSON.stringify({ oylar: kayitlar }, null, 2) + "\n```\n";
+      return "Bu fisin oylari. Asagidaki blok otomatik okunur, elle duzenleme.\\n\\n"
+        + "```json\\n" + JSON.stringify({ oylar: kayitlar }, null, 2) + "\\n```\\n";
     }
 
     function paint() {
