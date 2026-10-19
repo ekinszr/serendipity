@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Keşif Fişi &middot; 19 Ekim 2026</title>
+<meta name="description" content="Haftalık keşif fişi: güvenilir kaynaklardan ilgili ama beklenmedik okumalar.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600;8..60,700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  /* --- jetonlar: marka kitabi --- */
+  :root {
+    --paper: #eeefe7;
+    --paper-raised: #f8f8f2;
+    --ink: #1c1e16;
+    --ink-soft: #4b4e3f;
+    --accent: #b23a2a;
+    --accent-2: #4b5e3a;
+    --gold: #7a5e24;
+    --line: rgba(28,30,22,0.14);
+    --line-strong: rgba(28,30,22,0.28);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --paper: #171a13; --paper-raised: #1f2318; --ink: #ece9dd; --ink-soft: #b7b79e;
+      --accent: #e2694f; --accent-2: #8fae72; --gold: #d2aa5c;
+      --line: rgba(236,233,221,0.14); --line-strong: rgba(236,233,221,0.26);
+    }
+  }
+  :root[data-theme="light"] {
+    --paper: #eeefe7; --paper-raised: #f8f8f2; --ink: #1c1e16; --ink-soft: #4b4e3f;
+    --accent: #b23a2a; --accent-2: #4b5e3a; --gold: #7a5e24;
+    --line: rgba(28,30,22,0.14); --line-strong: rgba(28,30,22,0.28);
+  }
+  :root[data-theme="dark"] {
+    --paper: #171a13; --paper-raised: #1f2318; --ink: #ece9dd; --ink-soft: #b7b79e;
+    --accent: #e2694f; --accent-2: #8fae72; --gold: #d2aa5c;
+    --line: rgba(236,233,221,0.14); --line-strong: rgba(236,233,221,0.26);
+  }
+
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: "Source Serif 4", Georgia, serif;
+    font-size: 16px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: var(--accent); }
+  ::selection { background: var(--accent); color: var(--paper); }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+
+  .wrap { max-width: 920px; margin: 0 auto; padding: 48px 24px 100px; }
+
+  /* --- kunye --- */
+  header.masthead { border-bottom: 3px solid var(--ink); padding-bottom: 20px; margin-bottom: 40px; }
+  .kicker {
+    font-family: "JetBrains Mono", monospace; font-size: 11px; letter-spacing: 0.16em;
+    text-transform: uppercase; color: var(--accent); margin: 0 0 10px;
+    display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px;
+  }
+  h1.wordmark {
+    font-family: "Instrument Serif", Georgia, serif; font-style: italic;
+    font-size: clamp(48px, 9vw, 84px); line-height: 0.95; margin: 0;
+    letter-spacing: -0.01em; text-wrap: balance;
+  }
+  .dek { max-width: 56ch; color: var(--ink-soft); font-size: 17px; margin: 16px 0 0; }
+  .runbar {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+    gap: 2px 18px; margin-top: 26px;
+    font-family: "JetBrains Mono", monospace; font-variant-numeric: tabular-nums;
+  }
+  .runbar dt {
+    font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--ink-soft); margin-bottom: 4px;
+  }
+  .runbar dd { margin: 0; font-size: 15px; font-weight: 600; }
+
+  /* --- kayitlar: marka kitabindaki "live-card" --- */
+  .records { display: flex; flex-direction: column; gap: 20px; }
+  .rec {
+    background: var(--paper-raised); border: 1px solid var(--line);
+    border-radius: 4px; padding: 26px 28px; position: relative;
+  }
+  .rec::before {
+    content: ""; position: absolute; left: 0; top: 16px; bottom: 16px;
+    width: 3px; background: var(--accent);
+  }
+  .rec-top {
+    display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+    font-family: "JetBrains Mono", monospace; font-size: 11.5px;
+    color: var(--ink-soft); margin-bottom: 14px;
+  }
+  .cat-icon { width: 20px; height: 20px; color: var(--accent); flex: none; }
+  .rec-cat { text-transform: uppercase; letter-spacing: 0.08em; }
+  .rec-title {
+    font-family: "Source Serif 4", Georgia, serif; font-weight: 600;
+    font-size: 25px; line-height: 1.28; margin: 0 0 12px; text-wrap: balance;
+  }
+  .rec-title a { color: var(--ink); text-decoration: none; border-bottom: 1.5px solid var(--accent); }
+  .rec-title a:hover { color: var(--accent); }
+  .rec-summary { color: var(--ink-soft); font-size: 15.5px; line-height: 1.65; margin: 0 0 18px; max-width: 62ch; }
+
+  .rec-foot {
+    display: flex; justify-content: space-between; align-items: center;
+    gap: 12px 18px; flex-wrap: wrap;
+    border-top: 1px dashed var(--line-strong); padding-top: 12px;
+    font-family: "JetBrains Mono", monospace; font-size: 12px;
+  }
+  .rec-source { color: var(--gold); }
+  .rec-tools { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+
+  /* uzaklik: vurgu rengi baglanti/ikona ayrildigi icin ikincil vurgu kullanir */
+  .dist { display: flex; align-items: center; gap: 7px; color: var(--ink-soft); }
+  .meter { display: flex; gap: 3px; }
+  .tick { width: 12px; height: 3px; background: var(--line-strong); border-radius: 1px; }
+  .tick.on { background: var(--accent-2); }
+  .rec.far .tick.on { background: var(--gold); }
+  .dist-word { letter-spacing: 0.1em; text-transform: uppercase; font-size: 10.5px; }
+  .rec.far .dist-word { color: var(--gold); }
+
+  .vote {
+    font: inherit; font-size: 11px; letter-spacing: 0.06em;
+    background: none; border: 1px solid var(--line-strong); color: var(--ink-soft);
+    padding: 5px 10px; border-radius: 3px; cursor: pointer;
+    transition: color 0.18s ease, border-color 0.18s ease, background 0.18s ease;
+  }
+  .vote:hover { color: var(--ink); border-color: var(--ink-soft); }
+  .vote[aria-pressed="true"] { background: var(--accent-2); border-color: var(--accent-2); color: var(--paper-raised); }
+  .vote.no[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--paper-raised); }
+  .go { color: var(--accent); font-weight: 600; text-decoration: none; white-space: nowrap; }
+  .go:hover { text-decoration: underline; text-underline-offset: 3px; }
+
+  footer.colophon {
+    margin-top: 44px; padding-top: 18px; border-top: 1px solid var(--line);
+    display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap;
+    font-family: "JetBrains Mono", monospace; font-size: 11px; line-height: 1.7;
+    color: var(--ink-soft);
+  }
+  footer.colophon p { margin: 0; max-width: 46ch; }
+
+  @media (max-width: 620px) {
+    .wrap { padding: 32px 18px 72px; }
+    .rec { padding: 22px 20px; }
+    .rec-foot { flex-direction: column; align-items: flex-start; }
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .rec { animation: rise 0.45s cubic-bezier(0.2, 0.7, 0.2, 1) both; animation-delay: calc(var(--i) * 55ms); }
+    @keyframes rise { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+  }
+</style>
+<script>var REPO_ISSUE_URL = "https://github.com/ekinszr/serendipity/issues/new";</script>
+</head>
+<body>
+  <div class="wrap">
+    <header class="masthead">
+      <p class="kicker"><span>Serendipity &middot; Haftalık Keşif</span><span>Sayı 025</span></p>
+      <h1 class="wordmark">Keşif Fişi</h1>
+      <p class="dek">Seçkin kurumlardan, hakemli dergilerden ve fikir yazılarından &mdash;
+      kontrollü rastgelelikle seçilmiş, ilgili ama beklenmedik okumalar.</p>
+      <dl class="runbar">
+        <div><dt>Tarih</dt><dd>19 Ekim 2026</dd></div>
+        <div><dt>Kayıt</dt><dd>7</dd></div>
+        <div><dt>Alan</dt><dd>7</dd></div>
+        <div><dt>Uzak</dt><dd>0</dd></div>
+      </dl>
+    </header>
+    <div class="records">
+        <article class="rec" style="--i:0">
+          <div class="rec-top">
+            <svg class="cat-icon" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="16" cy="6.5" r="2.6"/><circle cx="6.5" cy="23" r="2.6"/><circle cx="25.5" cy="23" r="2.6"/><path d="M14.2 8.8 8.3 20.7M17.8 8.8l5.9 11.9M9.1 23h13.8"/></svg>
+            <span>Keşif No. 2401</span><span>&middot;</span>
+            <span class="rec-cat">Teknoloji ve Toplum</span>
+          </div>
+          <h2 class="rec-title"><a href="https://theconversation.com/young-voters-fear-mass-shootings-but-are-divided-on-gun-control-272235" target="_blank" rel="noopener">Young voters fear mass shootings but are divided on gun control</a></h2>
+          <p class="rec-summary">Research on the ‘massacre generation’ reveals that shared fear over mass shootings doesn’t lead to shared policy views.</p>
+          <div class="rec-foot">
+            <span class="rec-source">The Conversation</span>
+            <div class="rec-tools">
+              <span class="dist" title="Bu alan 7 gün önce de gelmişti">
+                <span class="meter" role="img" aria-label="Bu alan 7 gün önce de gelmişti"><span class="tick on"></span><span class="tick"></span><span class="tick"></span></span>
+                <span class="dist-word">yakın</span>
+              </span>
+              <button class="vote" type="button" data-aid="13917b31340ef576" data-vote="up"
+                data-baslik="Young voters fear mass shootings but are divided on gun control" data-alan="Teknoloji ve Toplum"
+                data-uzaklik="yakın" aria-pressed="false">&#10022; vay</button>
+              <button class="vote no" type="button" data-aid="13917b31340ef576" data-vote="down"
+                data-baslik="Young voters fear mass shootings but are divided on gun control" data-alan="Teknoloji ve Toplum"
+                data-uzaklik="yakın" aria-pressed="false">&#10005; alakasız</button>
+              <a class="go" href="https://theconversation.com/young-voters-fear-mass-shootings-but-are-divided-on-gun-control-272235" target="_blank" rel="noopener">Oku &rarr;</a>
+            </div>
+          </div>
+        </article>
+
+        <article class="rec" style="--i:1">
+          <div class="rec-top">
+            <svg class="cat-icon" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 12 16 5l12 7"/><path d="M8.5 13v10M16 13v10M23.5 13v10"/><path d="M5 23h22M3.5 27h25"/></svg>
+            <span>Keşif No. 2402</span><span>&middot;</span>
+            <span class="rec-cat">Seckin Kurumlardan Yeni Calismalar</span>
+          </div>
+          <h2 class="rec-title"><a href="https://doi.org/10.1038/s41598-026-70531-4" target="_blank" rel="noopener">Prevalence of 406 rare diseases by ethnicity and recorded COVID-19 infection rates among 62.5 million people in England</a></h2>
+          <p class="rec-summary">Abstract Rare diseases (RD) are individually uncommon but collectively affect millions of people. Yet national estimates of their prevalence, especially across ethnic groups, are limited, and how the COVID-19 pandemic affected people with RD across ethnic groups is unknown. We aimed to estimate the prevalence of 406 RD by ethnicity, and to describe recorded COVID-19 infection across these RD and e</p>
+          <div class="rec-foot">
+            <span class="rec-source">Oxford</span>
+            <div class="rec-tools">
+              <span class="dist" title="Bu alan 7 gün önce de gelmişti">
+                <span class="meter" role="img" aria-label="Bu alan 7 gün önce de gelmişti"><span class="tick on"></span><span class="tick"></span><span class="tick"></span></span>
+                <span class="dist-word">yakın</span>
+              </span>
+              <button class="vote" type="button" data-aid="d84406f5846e3b9e" data-vote="up"
+                data-baslik="Prevalence of 406 rare diseases by ethnicity and recorded COVID-19 infection rates among 62.5 million people in England" data-alan="Seckin Kurumlardan Yeni Calismalar"
+                data-uzaklik="yakın" aria-pressed="false">&#10022; vay</button>
+              <button class="vote no" type="button" data-aid="d84406f5846e3b9e" data-vote="down"
+                data-baslik="Prevalence of 406 rare diseases by ethnicity and recorded COVID-19 infection rates among 62.5 million people in England" data-alan="Seckin Kurumlardan Yeni Calismalar"
+                data-uzaklik="yakın" aria-pressed="false">&#10005; alakasız</button>
+              <a class="go" href="https://doi.org/10.1038/s41598-026-70531-4" target="_blank" rel="noopener">Oku &rarr;</a>
+            </div>
+          </div>
+        </article>
+
+        <article class="rec" style="--i:2">
+          <div class="rec-top">
+            <svg class="cat-icon" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M13 4h6M14 4v6.5L7 22a3 3 0 0 0 3 4h12a3 3 0 0 0 3-4l-7-11.5V4"/><path d="M10.5 19h11"/></svg>
+            <span>Keşif No. 2403</span><span>&middot;</span>
+            <span class="rec-cat">Akademik On-Baskilar (arXiv)</span>
+          </div>
+          <h2 class="rec-title"><a href="https://arxiv.org/abs/2610.22701" target="_blank" rel="noopener">Emergent Discrimination and Polarization in Multi-Agent Systems</a></h2>
+          <p class="rec-summary">arXiv:2610.22701v1 Announce Type: cross Abstract: We study theoretically how discrimination and polarization can emerge in a population of learning agents. Each agent uses an adaptive linear decision layer to map a language-model embedding of an issue to a binary opinion and maintains an evolving estimate of how much it trusts every other agent. Through pairwise interactions, agents update both th</p>
+          <div class="rec-foot">
+            <span class="rec-source">arXiv - physics.soc-ph (Sosyal Fizik)</span>
+            <div class="rec-tools">
+              <span class="dist" title="Bu alan 21 gündür gelmemişti">
+                <span class="meter" role="img" aria-label="Bu alan 21 gündür gelmemişti"><span class="tick on"></span><span class="tick on"></span><span class="tick"></span></span>
+                <span class="dist-word">orta</span>
+              </span>
+              <button class="vote" type="button" data-aid="26d0ec31d66e7404" data-vote="up"
+                data-baslik="Emergent Discrimination and Polarization in Multi-Agent Systems" data-alan="Akademik On-Baskilar (arXiv)"
+                data-uzaklik="orta" aria-pressed="false">&#10022; vay</button>
+              <button class="vote no" type="button" data-aid="26d0ec31d66e7404" data-vote="down"
+                data-baslik="Emergent Discrimination and Polarization in Multi-Agent Systems" data-alan="Akademik On-Baskilar (arXiv)"
+                data-uzaklik="orta" aria-pressed="false">&#10005; alakasız</button>
+              <a class="go" href="https://arxiv.org/abs/2610.22701" target="_blank" rel="noopener">Oku &rarr;</a>
+            </div>
+          </div>
+        </article>
+
+        <article class="rec" style="--i:3">
+          <div class="rec-top">
+            <svg class="cat-icon" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M16 9.5C13 7 9 6.5 4.5 7v17c4.5-.5 8.5 0 11.5 2.5 3-2.5 7-3 11.5-2.5V7C23 6.5 19 7 16 9.5z"/><path d="M16 9.5v17"/></svg>
+            <span>Keşif No. 2404</span><span>&middot;</span>
+            <span class="rec-cat">Genel Bilim</span>
+          </div>
+          <h2 class="rec-title"><a href="https://www.scientificamerican.com/article/microplastics-are-linked-to-inflammation-scientists-might-have-finally-worked-out-why/" target="_blank" rel="noopener">Microplastics are linked to inflammation—scientists might have finally worked out why</a></h2>
+          <p class="rec-summary">Microplastics interact with water to create highly reactive molecules, a new study finds</p>
+          <div class="rec-foot">
+            <span class="rec-source">Scientific American</span>
+            <div class="rec-tools">
+              <span class="dist" title="Bu alan 21 gündür gelmemişti">
+                <span class="meter" role="img" aria-label="Bu alan 21 gündür gelmemişti"><span class="tick on"></span><span class="tick on"></span><span class="tick"></span></span>
+                <span class="dist-word">orta</span>
+              </span>
+              <button class="vote" type="button" data-aid="cd731557adcfd2d6" data-vote="up"
+                data-baslik="Microplastics are linked to inflammation—scientists might have finally worked out why" data-alan="Genel Bilim"
+                data-uzaklik="orta" aria-pressed="false">&#10022; vay</button>
+              <button class="vote no" type="button" data-aid="cd731557adcfd2d6" data-vote="down"
+                data-baslik="Microplastics are linked to inflammation—scientists might have finally worked out why" data-alan="Genel Bilim"
+                data-uzaklik="orta" aria-pressed="false">&#10005; alakasız</button>
+              <a class="go" href="https://www.scientificamerican.com/article/microplastics-are-linked-to-inflammation-scientists-might-have-finally-worked-out-why/" target="_blank" rel="noopener">Oku &rarr;</a>
+            </div>
+          </div>
+        </article>
+
+        <article class="rec" style="--i:4">
+          <div class="rec-top">
+            <svg class="cat-icon" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M24 6c-8 0-15.5 6-18 20 6-2 10.5-6.5 12.5-11"/><path d="M8 26 22 8"/><path d="M12.5 21.5 16 18"/><path d="M16.5 17 19.5 14"/></svg>
+            <span>Keşif No. 2405</span><span>&middot;</span>
+            <span class="rec-cat">Tasarim ve Yaratici Dusunce</span>
+          </div>
+          <h2 class="rec-title"><a href="https://aeon.co/videos/theres-nothing-inherently-good-in-the-natural-argues-bruno-latour" target="_blank" rel="noopener">A vocabulary for the future: nature</a></h2>
+          <p class="rec-summary">For the philosopher Bruno Latour, seeing anything ‘natural’ as good and the ‘artificial’ as bad is perversely human-centric - by Aeon Video Watch on Aeon</p>
+          <div class="rec-foot">
+            <span class="rec-source">Aeon (Felsefe &amp; Kultur)</span>
+            <div class="rec-tools">
+              <span class="dist" title="Bu alan 7 gün önce de gelmişti">
+                <span class="meter" role="img" aria-label="Bu alan 7 gün önce de gelmişti"><span class="tick on"></span><span class="tick"></span><span class="tick"></span></span>
+                <span class="dist-word">yakın</span>
+              </span>
+              <button class="vote" type="button" data-aid="7dfc711d6e44ad9c" data-vote="up"
+                data-baslik="A vocabulary for the future: nature" data-alan="Tasarim ve Yaratici Dusunce"
+                data-uzaklik="yakın" aria-pressed="false">&#10022; vay</button>
+              <button class="vote no" type="button" data-aid="7dfc711d6e44ad9c" data-vote="down"
+                data-baslik="A vocabulary for the future: nature" data-alan="Tasarim ve Yaratici Dusunce"
+                data-uzaklik="yakın" aria-pressed="false">&#10005; alakasız</button>
+              <a class="go" href="https://aeon.co/videos/theres-nothing-inherently-good-in-the-natural-argues-bruno-latour" target="_blank" rel="noopener">Oku &rarr;</a>
+            </div>
+          </div>
+        </article>
+
+        <article class="rec" style="--i:5">
+          <div class="rec-top">
+            <svg class="cat-icon" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M16 4v23M7 9h18"/><path d="M4.5 17a6 6 0 0 0 11 0L10 9z"/><path d="M16.5 17a6 6 0 0 0 11 0L22 9z"/><path d="M11 27h10"/></svg>
+            <span>Keşif No. 2406</span><span>&middot;</span>
+            <span class="rec-cat">Politika ve Ekonomi (Dusunce Kuruluslari)</span>
+          </div>
+          <h2 class="rec-title"><a href="https://www.pewresearch.org/race-and-ethnicity/2026/10/16/how-latino-voters-are-experiencing-the-2026-midterm-elections/" target="_blank" rel="noopener">How Latino Voters Are Experiencing the 2026 Midterm Elections</a></h2>
+          <p class="rec-summary">Democratic congressional candidates have a sizable advantage among Latino registered voters. And Latino Democratic candidate supporters are more engaged with this year’s election compared with four years ago.</p>
+          <div class="rec-foot">
+            <span class="rec-source">Pew Research Center</span>
+            <div class="rec-tools">
+              <span class="dist" title="Bu alan 14 gündür gelmemişti">
+                <span class="meter" role="img" aria-label="Bu alan 14 gündür gelmemişti"><span class="tick on"></span><span class="tick on"></span><span class="tick"></span></span>
+                <span class="dist-word">orta</span>
+              </span>
+              <button class="vote" type="button" data-aid="6aeb4d7daf88f4eb" data-vote="up"
+                data-baslik="How Latino Voters Are Experiencing the 2026 Midterm Elections" data-alan="Politika ve Ekonomi (Dusunce Kuruluslari)"
+                data-uzaklik="orta" aria-pressed="false">&#10022; vay</button>
+              <button class="vote no" type="button" data-aid="6aeb4d7daf88f4eb" data-vote="down"
+                data-baslik="How Latino Voters Are Experiencing the 2026 Midterm Elections" data-alan="Politika ve Ekonomi (Dusunce Kuruluslari)"
+                data-uzaklik="orta" aria-pressed="false">&#10005; alakasız</button>
+              <a class="go" href="https://www.pewresearch.org/race-and-ethnicity/2026/10/16/how-latino-voters-are-experiencing-the-2026-midterm-elections/" target="_blank" rel="noopener">Oku &rarr;</a>
+            </div>
+          </div>
+        </article>
+
+        <article class="rec" style="--i:6">
+          <div class="rec-top">
+            <svg class="cat-icon" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><ellipse cx="16" cy="16" rx="13" ry="5.5"/><ellipse cx="16" cy="16" rx="13" ry="5.5" transform="rotate(60 16 16)"/><ellipse cx="16" cy="16" rx="13" ry="5.5" transform="rotate(120 16 16)"/><circle cx="16" cy="16" r="1.8" fill="currentColor" stroke="none"/></svg>
+            <span>Keşif No. 2407</span><span>&middot;</span>
+            <span class="rec-cat">Karmasik Sistemler ve Bilim</span>
+          </div>
+          <h2 class="rec-title"><a href="https://www.sciencenews.org/article/grand-canyon-lost-history-giant-cliff" target="_blank" rel="noopener">How the Grand Canyon could have lost 1 billion years of geologic history</a></h2>
+          <p class="rec-summary">The rise and fall of a continent-spanning cliff may help explain a mysterious 1-billion-year gap in Earth’s geologic history, a new study suggests.</p>
+          <div class="rec-foot">
+            <span class="rec-source">Science News</span>
+            <div class="rec-tools">
+              <span class="dist" title="Bu alan 14 gündür gelmemişti">
+                <span class="meter" role="img" aria-label="Bu alan 14 gündür gelmemişti"><span class="tick on"></span><span class="tick on"></span><span class="tick"></span></span>
+                <span class="dist-word">orta</span>
+              </span>
+              <button class="vote" type="button" data-aid="5212b276ae217474" data-vote="up"
+                data-baslik="How the Grand Canyon could have lost 1 billion years of geologic history" data-alan="Karmasik Sistemler ve Bilim"
+                data-uzaklik="orta" aria-pressed="false">&#10022; vay</button>
+              <button class="vote no" type="button" data-aid="5212b276ae217474" data-vote="down"
+                data-baslik="How the Grand Canyon could have lost 1 billion years of geologic history" data-alan="Karmasik Sistemler ve Bilim"
+                data-uzaklik="orta" aria-pressed="false">&#10005; alakasız</button>
+              <a class="go" href="https://www.sciencenews.org/article/grand-canyon-lost-history-giant-cliff" target="_blank" rel="noopener">Oku &rarr;</a>
+            </div>
+          </div>
+        </article>
+    </div>
+    <footer class="colophon">
+      <p>Görülmemiş kaynaklar arasından ağırlıklı-rastgele seçildi. Çentikler uzaklığı
+      gösterir: o keşif alanı ne kadar zamandır fişe girmemiş.</p>
+      <p><span id="tally">Henüz not düşülmedi</span>
+      <a id="gonder" hidden href="#" rel="noopener"
+         title="Oyların önceden doldurulmuş bir GitHub issue'suna gider; motor onu okur">
+         &nbsp;·&nbsp;Oyları gönder &rarr;</a></p>
+    </footer>
+  </div>
+<script>
+  // Geri bildirim once tarayicida tutulur, sonra TEK TIKLA GitHub issue'suna
+  // gonderilir; haftalik kosu issue'yu okuyup state.json'a isler ve kapatir.
+  // Oylar kayit numarasina degil MAKALE KIMLIGINE (aid) baglanir -- numara her
+  // kosuda degisir, kimlik degismez.
+  (function () {
+    var KEY = "serendipity-oy";
+    var store = {};
+    try { store = JSON.parse(localStorage.getItem(KEY) || "{}"); } catch (e) { store = {}; }
+
+    function govde() {
+      var kayitlar = Object.keys(store).map(function (aid) {
+        var o = store[aid];
+        return { aid: aid, oy: o.v, baslik: o.t, alan: o.c, uzaklik: o.d };
+      });
+      return "Bu fisin oylari. Asagidaki blok otomatik okunur, elle duzenleme.\n\n"
+        + "```json\n" + JSON.stringify({ oylar: kayitlar }, null, 2) + "\n```\n";
+    }
+
+    function paint() {
+      document.querySelectorAll(".vote").forEach(function (b) {
+        b.setAttribute("aria-pressed", String(
+          store[b.dataset.aid] && store[b.dataset.aid].v === b.dataset.vote));
+      });
+      var n = Object.keys(store).length;
+      var tally = document.getElementById("tally");
+      var gonder = document.getElementById("gonder");
+      if (tally) tally.textContent = n
+        ? n + " kayda not düşüldü"
+        : "Henüz not düşülmedi";
+      if (gonder) {
+        gonder.hidden = !n;
+        gonder.href = REPO_ISSUE_URL
+          + "?labels=oy&title=" + encodeURIComponent("Keşif Fişi oyları")
+          + "&body=" + encodeURIComponent(govde());
+      }
+    }
+
+    document.querySelectorAll(".vote").forEach(function (b) {
+      b.addEventListener("click", function () {
+        var aid = b.dataset.aid;
+        if (store[aid] && store[aid].v === b.dataset.vote) {
+          delete store[aid];
+        } else {
+          store[aid] = { v: b.dataset.vote, t: b.dataset.baslik,
+                         c: b.dataset.alan, d: b.dataset.uzaklik };
+        }
+        try { localStorage.setItem(KEY, JSON.stringify(store)); } catch (e) {}
+        paint();
+      });
+    });
+    paint();
+  })();
+</script>
+</body>
+</html>
